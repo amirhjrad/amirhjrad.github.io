@@ -23,25 +23,24 @@ author_profile: true
 - **Introduction to Electrical Engineering** (Feb 2023 - Jul 2023) | Prof. Mohammad Hamed Samimi  
 - **Introduction to Computing Systems and Programming** (Sep 2022 - Feb 2023) | Prof. Hadi Moradi  
 ### Mofid Highschool:
-- **10th Grade Physics Teacher Assistant**  
-- **11th Grade Physics Teacher Assistant**  
-- **Physics Laboratory Teacher Assistant**  
-- **11th Grade Executive Assistant**  
+- 10th Grade Physics Teacher Assistant  
+- 11th Grade Physics Teacher Assistant  
+- Physics Laboratory Teacher Assistant  
+- 11th Grade Executive Assistant  
 
 
 ## **EXTRACURRICULAR**
 
 ### IEEE Organization Student Membership  
-- **2023 - Present**  
-  - Having student membership certificate from ieee.org  
+  - Awarded free registeration for student membership certificate from ieee.org (2023-Present)
 ### IEEE University of Tehran Student Branch  
 *(Under Supervision of Dr. Saeed Akhavan)*  
-- **Vice Chair** (2022 - 2023)   
-- **Web Master** (2021 - 2023)  
-- **Head of Graphics Team** (2021 - 2023)  
+- Vice Chair (2022 - 2023)   
+- Web Master (2021 - 2023)  
+- Head of Graphics Team (2021 - 2023)  
 
 ### Sharif University of Technology  
-- **Mentor of Algorithm Workshop in a Computer Science Summer School Event and a Mathematics Workshop (Rasta).** (Jul 2022 - Sep 2022)   
-- **Member of Technical Team (Rasta)** (Jul 2022 - Sep 2022)  .  
+- Mentor of Algorithm Workshop in a Computer Science Summer School Event and a Mathematics Workshop (Rasta).(Jul 2022 - Sep 2022)
+- Member of Technical Team (Rasta). (Jul 2022 - Sep 2022)
 
 
