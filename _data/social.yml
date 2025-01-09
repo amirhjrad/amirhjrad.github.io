@@ -1,0 +1,38 @@
+# https://fontawesome.com/
+# https://jpswalsh.github.io/academicons/
+- name: Google Scholar
+  link: https://scholar.google.com/citations?user=f8vQCOAAAAAJ&hl=en
+  icon:
+    source: ai
+    name: ai-google-scholar
+    type: ai
+- name: Semantic Scholar
+  link: https://www.semanticscholar.org/author/Alex-Hern%C3%A1ndez-Garc%C3%ADa/83015253
+  icon:
+    source: ai
+    name: ai-semantic-scholar
+    type: ai
+- name: Twitter
+  link: https://twitter.com/alexhdezgcia
+  icon:
+    source: fa
+    name: fa-twitter
+    type: fab
+- name: Mastodon
+  link: https://scholar.social/@alexhg
+  icon:
+    source: fa
+    name: fa-mastodon
+    type: fab
+- name: GitHub
+  link: https://github.com/alexhernandezgarcia
+  icon:
+    source: fa
+    name: fa-github
+    type: fab
+- name: Email
+  link: mailto:firstname.lastname@e.email
+  icon:
+    source: fa
+    name: fa-at
+    type: fas
