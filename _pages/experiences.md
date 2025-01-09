@@ -22,6 +22,7 @@ author_profile: true
 - **Engineering Mathematics** (Sep 2023 - Jan 2024) | Dr. Rezvan Nasiri  
 - **Introduction to Electrical Engineering** (Feb 2023 - Jul 2023) | Prof. Mohammad Hamed Samimi  
 - **Introduction to Computing Systems and Programming** (Sep 2022 - Feb 2023) | Prof. Hadi Moradi  
+
 ### Mofid Highschool:
 - 10th Grade Physics Teacher Assistant  
 - 11th Grade Physics Teacher Assistant  
@@ -33,8 +34,10 @@ author_profile: true
 
 ### IEEE Organization Student Membership  
   - Awarded free registeration for student membership certificate from ieee.org (2023-Present)
+
 ### IEEE University of Tehran Student Branch  
 *(Under Supervision of Dr. Saeed Akhavan)*  
+
 - Vice Chair (2022 - 2023)   
 - Web Master (2021 - 2023)  
 - Head of Graphics Team (2021 - 2023)  
