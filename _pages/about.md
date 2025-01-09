@@ -7,8 +7,6 @@ author_profile: true
   # - /about.html
 ---
 
-About Me
--------
 I am Amirhesam Jafari Rad.
 
 
