@@ -7,7 +7,6 @@ redirect_from:
   - /resume
 ---
 
-
 # Amirhesam Jafari Rad  
 **University of Tehran, Department of Electrical & Computer Engineering**  
 
