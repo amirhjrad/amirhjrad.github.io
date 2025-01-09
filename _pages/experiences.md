@@ -33,7 +33,7 @@ author_profile: true
 ## **EXTRACURRICULAR**
 
 ### IEEE Organization Student Membership  
-  - Awarded free registeration for student membership certificate from ieee.org (2023-Present)
+  - Awarded free registration for student membership certificate from ieee.org (2023-Present)
 
 ### IEEE University of Tehran Student Branch  
 *(Under Supervision of Dr. Saeed Akhavan)*  
