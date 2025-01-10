@@ -19,11 +19,9 @@ redirect_from:
 ## **EDUCATION**  
 **University of Tehran**  
 **B.Sc. in Electrical Engineering**  
-- GPA: 3.38/4  
 
 **Mofid Highschool**  
 **Highschool Diploma, Mathematics and Physics**  
-- GPA: 4/4  
 
 ---
 
