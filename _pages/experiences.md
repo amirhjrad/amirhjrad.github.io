@@ -17,7 +17,8 @@ author_profile: true
 ## **TEACHING ASSISTANT EXPERIENCES**
 
 ### University of Tehran:
-- **Logic Circuits/Digital Systems I** (Sep 2024 - Present) | Prof. Zain Navabi  
+- **Electronic System Level Design Methodologies** (Feb 2025 - Present) | Prof. Bijan Alizadeh  
+- **Logic Circuits/Digital Systems I** (Sep 2024 - Feb 2025) | Prof. Zain Navabi  
 - **Electromagnetics** (Oct 2023 - Jan 2024) | Dr. Leila Yousefi  
 - **Engineering Mathematics** (Sep 2023 - Jan 2024) | Dr. Rezvan Nasiri  
 - **Introduction to Electrical Engineering** (Feb 2023 - Jul 2023) | Prof. Mohammad Hamed Samimi  
