@@ -17,7 +17,7 @@ author_profile: true
 ## **TEACHING ASSISTANT EXPERIENCES**
 
 ### University of Tehran:
-- **Logic Circuits** (Feb 2025 - Present) | Prof. Saeed Safari  
+- **Logic Circuits** (Feb 2025 - Present) | Dr. Saeed Safari  
 - **Electronic System Level Design Methodologies** (Feb 2025 - Present) | Prof. Bijan Alizadeh  
 - **Logic Circuits/Digital Systems I** (Sep 2024 - Feb 2025) | Prof. Zain Navabi  
 - **Electromagnetics** (Oct 2023 - Jan 2024) | Dr. Leila Yousefi  

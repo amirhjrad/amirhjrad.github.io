@@ -4,6 +4,15 @@
   {% assign author = site.data.authors[page.author] %}{% else %}{% assign author = site.author %}
 {% endif %}
 
+<style>
+  /* Define the size and alignment for the Google Scholar icon */
+  .google-scholar-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+  }
+</style>
+
 <div itemscope itemtype="http://schema.org/Person">
 
   <div class="author__avatar">
@@ -44,7 +53,7 @@
       {% if author.googlescholar %}
       <li>
         <a href="{{ author.googlescholar }}">
-          <img src="googlescholar.png" alt="" style="width:16px; height:16px; vertical-align:middle;" />
+          <img src="assets/images/googlescholar.png" alt="Google Scholar" class="google-scholar-icon icon-pad-right" />
           Google Scholar
         </a>
       </li>
