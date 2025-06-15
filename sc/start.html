@@ -4,259 +4,254 @@
     <title>Private Chat</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        #chat-box { height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll; margin-bottom: 10px; }
-        #message-input { width: 70%; padding: 8px; }
-        #send-button { width: 25%; padding: 8px; }
-        .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
-        .your-message { background-color: #e3f2fd; text-align: right; }
-        .their-message { background-color: #f1f1f1; text-align: left; }
-        #status { color: #666; margin-bottom: 10px; }
-        #login { margin-bottom: 15px; }
-        .timestamp { font-size: 0.8em; color: #666; }
+        #chat-box { height: 400px; border: 1px solid #ddd; padding: 10px; overflow-y: scroll; margin-bottom: 10px; background: #fafafa; }
+        #message-input { width: 75%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        #send-button { width: 23%; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; }
+        .message { margin: 10px 0; padding: 8px 12px; border-radius: 4px; }
+        .your-message { background: #e3f2fd; margin-left: 20%; }
+        .their-message { background: #f1f1f1; margin-right: 20%; }
+        .typing { font-style: italic; color: #666; text-align: center; margin: 5px 0; }
+        #status { padding: 8px; border-radius: 4px; margin-bottom: 10px; }
+        .online { background: #e8f5e9; color: #2e7d32; }
+        .offline { background: #ffebee; color: #c62828; }
     </style>
 </head>
 <body>
     <h1>Private Chat 💬</h1>
-    <div id="login">
-        <h3>Enter GitHub Token</h3>
-        <input type="password" id="github-token" placeholder="Paste GitHub Token">
-        <button id="login-btn">Connect</button>
-    </div>
-    <div id="status">🔴 Disconnected</div>
+    <div id="status" class="offline">🔴 Disconnected</div>
     <div id="chat-box"></div>
-    <input type="text" id="message-input" placeholder="Type your message..." disabled>
-    <button id="send-button" disabled>Send</button>
+    <div id="typing-status"></div>
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="message-input" placeholder="Type your message..." disabled>
+        <button id="send-button" disabled>Send</button>
+    </div>
 
     <script>
-        // CONFIGURATION - CHANGE THESE!
-        const REPO = "amirhjrad/amirhjrad.github.io"; // e.g. "myusername/myrepo"
+        // CONFIG (Change these!)
+        const REPO = "amirhjrad/amirhjrad.github.io";
         const CHAT_FILE = "chat-data.json";
-        const SYNC_INTERVAL = 5000; // 5 seconds
-        const MAX_RETRIES = 3; // Max retry attempts
+        const SYNC_INTERVAL = 3000; // 3 seconds
+        const MAX_RETRIES = 3;
 
-        // DOM Elements
+        // Elements
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const statusDiv = document.getElementById('status');
-        const tokenInput = document.getElementById('github-token');
-        const loginBtn = document.getElementById('login-btn');
+        const typingDiv = document.getElementById('typing-status');
 
-        // Chat State
+        // State
         let githubToken = "";
         let messages = [];
         let lastUpdate = 0;
         let currentSHA = null;
         let isSaving = false;
         let retryCount = 0;
+        let lastTypingTime = 0;
 
-        // 1. Login with GitHub Token
-        loginBtn.addEventListener('click', async () => {
-            githubToken = tokenInput.value.trim();
-            if (!githubToken) return alert("Please enter your GitHub token");
-            
-            statusDiv.textContent = "🟠 Connecting to GitHub...";
-            try {
-                await initializeChat();
-                document.getElementById('login').style.display = "none";
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-                statusDiv.textContent = "🟢 Connected! Last sync: " + new Date().toLocaleTimeString();
-                setInterval(loadMessages, SYNC_INTERVAL);
-            } catch (err) {
-                statusDiv.textContent = "🔴 Connection failed: " + err.message;
-                console.error(err);
+        // Initialize
+        promptForToken();
+
+        function promptForToken() {
+            githubToken = prompt("Enter your GitHub token (with repo access):");
+            if (!githubToken) {
+                alert("Token required to chat!");
+                return;
             }
-        });
+            initializeChat();
+        }
 
-        // 2. Initialize chat (load or create file)
         async function initializeChat() {
+            statusDiv.textContent = "🟠 Connecting...";
+            statusDiv.className = "offline";
+            
             try {
-                // First try to load existing chat
                 await loadMessages();
-            } catch (loadError) {
-                if (loadError.message.includes("404")) {
-                    // File doesn't exist - create it
-                    statusDiv.textContent = "🟠 Creating chat file...";
-                    await createChatFile();
-                    await loadMessages();
-                } else {
-                    throw loadError;
-                }
+                startSyncing();
+                enableInput();
+                statusDiv.textContent = "🟢 Connected!";
+                statusDiv.className = "online";
+            } catch (err) {
+                statusDiv.textContent = `🔴 Error: ${err.message}`;
+                console.error(err);
+                setTimeout(promptForToken, 3000);
             }
         }
 
-        // 3. Load messages from GitHub
         async function loadMessages() {
             try {
                 const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}?t=${Date.now()}`;
-                const response = await fetch(url, {
+                const res = await fetch(url, {
                     headers: { Authorization: `token ${githubToken}` }
                 });
-                
-                if (!response.ok) {
-                    throw new Error(response.status === 404 ? "Chat file not found" : "GitHub API error");
+
+                if (!res.ok) {
+                    if (res.status === 404) await createChatFile();
+                    else throw new Error(res.status === 403 ? "Rate limited - wait a minute" : "Can't load chat");
                 }
-                
-                const data = await response.json();
+
+                const data = await res.json();
                 const content = JSON.parse(atob(data.content));
                 currentSHA = data.sha;
-                
+
                 if (content.lastUpdate > lastUpdate) {
                     lastUpdate = content.lastUpdate;
                     messages = content.messages;
-                    updateChat();
-                    statusDiv.textContent = "🟢 Connected! Last sync: " + new Date().toLocaleTimeString();
-                    retryCount = 0; // Reset retry counter on success
+                    renderMessages();
+                    retryCount = 0;
                 }
             } catch (err) {
-                console.error("Sync error:", err);
                 retryCount++;
-                if (retryCount >= MAX_RETRIES) {
-                    statusDiv.textContent = "🔴 Sync failed - please refresh";
-                } else {
-                    statusDiv.textContent = "🟠 Syncing... (attempt " + retryCount + ")";
-                }
+                if (retryCount >= MAX_RETRIES) throw err;
+                console.log(`Retrying... (${retryCount}/${MAX_RETRIES})`);
+                await new Promise(r => setTimeout(r, 2000));
+                return loadMessages();
             }
         }
 
-        // 4. Create new chat file
         async function createChatFile() {
             const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
-            const response = await fetch(url, {
+            const res = await fetch(url, {
                 method: "PUT",
                 headers: { Authorization: `token ${githubToken}` },
                 body: JSON.stringify({
-                    message: "Initial chat file creation",
+                    message: "Initial chat file",
                     content: btoa(JSON.stringify({
                         messages: [],
                         lastUpdate: 0
                     }))
                 })
             });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to create chat file");
-            }
+            if (!res.ok) throw new Error("Failed to create chat file");
         }
 
-        // 5. Save messages to GitHub
         async function saveMessages(newMessages) {
             if (isSaving) return;
             isSaving = true;
-            let retries = 0;
-            
-            while (retries < MAX_RETRIES) {
-                try {
-                    // First get latest SHA to prevent conflicts
-                    const shaUrl = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
-                    const shaResponse = await fetch(shaUrl, {
-                        headers: { Authorization: `token ${githubToken}` }
-                    });
-                    
-                    if (!shaResponse.ok) throw new Error("Couldn't get file version");
-                    const shaData = await shaResponse.json();
-                    currentSHA = shaData.sha;
-                    
-                    // Now save with the latest SHA
-                    const saveUrl = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
-                    const saveResponse = await fetch(saveUrl, {
-                        method: "PUT",
-                        headers: { Authorization: `token ${githubToken}` },
-                        body: JSON.stringify({
-                            message: "Chat update at " + new Date().toISOString(),
-                            content: btoa(JSON.stringify({
-                                messages: newMessages,
-                                lastUpdate: Date.now()
-                            })),
-                            sha: currentSHA
-                        })
-                    });
-                    
-                    if (!saveResponse.ok) {
-                        const errorData = await saveResponse.json();
-                        throw new Error(errorData.message || "Save failed");
-                    }
-                    
-                    // Success!
-                    messages = newMessages;
-                    updateChat();
-                    statusDiv.textContent = "🟢 Message sent! Last sync: " + new Date().toLocaleTimeString();
-                    isSaving = false;
-                    return;
-                    
-                } catch (err) {
-                    console.error("Save error (attempt " + (retries + 1) + "):", err);
-                    retries++;
-                    if (retries < MAX_RETRIES) {
-                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-                    }
+
+            try {
+                // Get latest SHA first
+                const shaUrl = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+                const shaRes = await fetch(shaUrl, {
+                    headers: { Authorization: `token ${githubToken}` }
+                });
+                if (!shaRes.ok) throw new Error("Can't get file version");
+                currentSHA = (await shaRes.json()).sha;
+
+                // Save with latest SHA
+                const saveUrl = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+                const saveRes = await fetch(saveUrl, {
+                    method: "PUT",
+                    headers: { Authorization: `token ${githubToken}` },
+                    body: JSON.stringify({
+                        message: `Chat update ${new Date().toISOString()}`,
+                        content: btoa(JSON.stringify({
+                            messages: newMessages,
+                            lastUpdate: Date.now()
+                        })),
+                        sha: currentSHA
+                    })
+                });
+
+                if (!saveRes.ok) {
+                    const err = await saveRes.json();
+                    throw new Error(err.message || "Save failed");
                 }
+
+                messages = newMessages;
+                lastUpdate = Date.now();
+                renderMessages();
+            } catch (err) {
+                console.error("Save error:", err);
+                throw err;
+            } finally {
+                isSaving = false;
             }
-            
-            // If we get here, all retries failed
-            statusDiv.textContent = "🔴 Failed to save after " + MAX_RETRIES + " attempts";
-            isSaving = false;
-            throw new Error("Max retries exceeded");
         }
 
-        // 6. Update chat display
-        function updateChat() {
-            chatBox.innerHTML = "";
-            messages.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `message ${msg.sender === "you" ? "your-message" : "their-message"}`;
-                div.innerHTML = `
-                    <strong>${msg.sender}:</strong> ${msg.text}
-                    <div class="timestamp">${new Date(msg.time).toLocaleTimeString()}</div>
-                `;
-                chatBox.appendChild(div);
-            });
+        function startSyncing() {
+            setInterval(async () => {
+                try {
+                    await loadMessages();
+                    // Show typing indicator if partner recently typed
+                    const partnerTyping = messages.find(m => 
+                        m.sender === "typing" && 
+                        Date.now() - new Date(m.time).getTime() < 5000
+                    );
+                    typingDiv.innerHTML = partnerTyping ? 
+                        `<div class="typing">${partnerTyping.text}</div>` : "";
+                } catch (err) {
+                    console.log("Sync error:", err.message);
+                }
+            }, SYNC_INTERVAL);
+        }
+
+        function renderMessages() {
+            chatBox.innerHTML = messages
+                .filter(m => m.sender !== "typing")
+                .map(msg => `
+                    <div class="message ${msg.sender === "you" ? "your-message" : "their-message"}">
+                        <strong>${msg.sender}:</strong> ${msg.text}
+                        <div style="font-size:0.8em;color:#666">
+                            ${new Date(msg.time).toLocaleTimeString()}
+                        </div>
+                    </div>
+                `).join("");
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // 7. Send message
-        sendButton.addEventListener('click', async () => {
+        function enableInput() {
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.focus();
+
+            messageInput.addEventListener('keyup', () => {
+                lastTypingTime = Date.now();
+            });
+
+            // Send on Enter
+            messageInput.addEventListener('keypress', async (e) => {
+                if (e.key === "Enter") await sendMessage();
+            });
+
+            sendButton.addEventListener('click', sendMessage);
+        }
+
+        async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || isSaving) return;
-            
-            const newMessages = [...messages, {
+
+            // Optimistically show message
+            const tempId = Date.now();
+            messages.push({
+                id: tempId,
                 sender: "you",
                 text: text,
                 time: new Date().toISOString()
-            }];
-            
-            // Optimistically update UI
-            messages = newMessages;
-            updateChat();
-            messageInput.value = "";
-            
+            });
+            renderMessages();
+
             // Disable input while saving
+            messageInput.value = "";
             messageInput.disabled = true;
             sendButton.disabled = true;
             sendButton.textContent = "Sending...";
-            
+
             try {
-                await saveMessages(newMessages);
+                await saveMessages(messages);
             } catch (err) {
-                // Revert if save failed
-                messages = messages.slice(0, -1);
-                updateChat();
+                // Remove failed message
+                messages = messages.filter(m => m.id !== tempId);
+                renderMessages();
                 messageInput.value = text;
-                alert("Failed to send message. Please try again.");
+                alert("Message failed. Try again.");
             } finally {
                 messageInput.disabled = false;
                 sendButton.disabled = false;
                 sendButton.textContent = "Send";
                 messageInput.focus();
             }
-        });
-
-        // Press Enter to send
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === "Enter") sendButton.click();
-        });
+        }
     </script>
 </body>
 </html>
