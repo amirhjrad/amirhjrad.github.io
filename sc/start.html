@@ -27,12 +27,11 @@
     <button id="send-button" disabled>Send</button>
 
     <script>
-        // Config
-        const REPO = "amirhjrad/amirhjrad.github.io"; // e.g., "myusername/myrepo"
+        // CONFIG - CHANGE THIS!
+        const REPO = "amirhjrad/amirhjrad.github.io/sc"; // e.g. "myusername/myrepo"
         const CHAT_FILE = "chat-data.json";
-        const POLL_TIMEOUT = 30000; // 30 seconds (GitHub API timeout)
 
-        // DOM
+        // DOM Elements
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
@@ -43,149 +42,130 @@
         let githubToken = "";
         let messages = [];
         let lastUpdate = 0;
-        let isPolling = false;
+        let currentSHA = null;
 
-        // Login with GitHub Token
-        loginBtn.addEventListener('click', () => {
+        // 1. Login with GitHub Token
+        loginBtn.addEventListener('click', async () => {
             githubToken = tokenInput.value.trim();
             if (!githubToken) return alert("Enter GitHub Token!");
             
-            statusDiv.textContent = "🟢 Connected to GitHub";
-            document.getElementById('login').style.display = "none";
-            messageInput.disabled = false;
-            sendButton.disabled = false;
-            
-            startLongPolling();
+            statusDiv.textContent = "🟢 Connecting...";
+            try {
+                // First, try to load the existing chat file
+                await loadMessages();
+                
+                // If successful, start the chat
+                document.getElementById('login').style.display = "none";
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                statusDiv.textContent = "🟢 Connected!";
+                
+                // Start checking for new messages
+                setInterval(loadMessages, 3000); // Check every 3 seconds
+                
+            } catch (err) {
+                statusDiv.textContent = "🔴 Error: " + err.message;
+                console.error(err);
+            }
         });
 
-        // Long-polling for new messages
-        function startLongPolling() {
-            if (isPolling) return;
-            isPolling = true;
-            
-            const poll = async () => {
-                try {
-                    const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}?t=${Date.now()}`;
-                    const response = await fetch(url, {
-                        headers: { Authorization: `token ${githubToken}` }
-                    });
-                    
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            await createChatFile();
-                        }
-                        throw new Error("Failed to fetch messages");
-                    }
-                    
-                    const data = await response.json();
-                    const content = JSON.parse(atob(data.content));
-                    
-                    if (content.lastUpdate > lastUpdate) {
-                        lastUpdate = content.lastUpdate;
-                        messages = content.messages;
-                        updateChat();
-                    }
-                    
-                    // Immediately poll again if no error
-                    setTimeout(poll, 100);
-                    
-                } catch (err) {
-                    statusDiv.textContent = "🔴 Error: " + err.message;
-                    console.error(err);
-                    
-                    // Retry after 5 seconds on error
-                    setTimeout(poll, 5000);
+        // 2. Load messages from GitHub
+        async function loadMessages() {
+            try {
+                const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+                const response = await fetch(url, {
+                    headers: { Authorization: `token ${githubToken}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Could not load chat. Make sure chat-data.json exists!");
                 }
-            };
-            
-            poll();
+                
+                const data = await response.json();
+                const content = JSON.parse(atob(data.content));
+                
+                // Update SHA for future saves
+                currentSHA = data.sha;
+                
+                // Only update if there are new messages
+                if (content.lastUpdate > lastUpdate) {
+                    lastUpdate = content.lastUpdate;
+                    messages = content.messages;
+                    updateChat();
+                }
+                
+            } catch (err) {
+                console.error("Error loading messages:", err);
+                throw err;
+            }
         }
 
-        // Create chat file if it doesn't exist
-        async function createChatFile() {
-            const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
-            const response = await fetch(url, {
-                method: "PUT",
-                headers: { Authorization: `token ${githubToken}` },
-                body: JSON.stringify({
-                    message: "Create chat file",
-                    content: btoa(JSON.stringify({
-                        messages: [],
-                        lastUpdate: 0
-                    }))
-                })
-            });
-            
-            if (!response.ok) throw new Error("Failed to create chat file");
-        }
-
-        // Save messages to GitHub
+        // 3. Save messages to GitHub
         async function saveMessages(newMessages) {
             try {
-                messages = newMessages;
-                lastUpdate = Date.now();
-                
                 const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
                 const response = await fetch(url, {
                     method: "PUT",
                     headers: { Authorization: `token ${githubToken}` },
                     body: JSON.stringify({
-                        message: "Update chat",
+                        message: "Chat update",
                         content: btoa(JSON.stringify({
-                            messages,
-                            lastUpdate
+                            messages: newMessages,
+                            lastUpdate: Date.now()
                         })),
-                        sha: await getFileSHA()
+                        sha: currentSHA // This is critical for updates
                     })
                 });
                 
-                if (!response.ok) throw new Error("Failed to save");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to save");
+                }
+                
+                // Update local copy
+                messages = newMessages;
                 updateChat();
+                
             } catch (err) {
-                statusDiv.textContent = "🔴 Error saving: " + err.message;
-                console.error(err);
+                console.error("Error saving:", err);
+                statusDiv.textContent = "🔴 Error saving - try again";
+                throw err;
             }
         }
 
-        // Get file SHA (needed for updates)
-        async function getFileSHA() {
-            const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
-            const response = await fetch(url, {
-                headers: { Authorization: `token ${githubToken}` }
-            });
-            
-            if (!response.ok) return null;
-            const data = await response.json();
-            return data.sha;
-        }
-
-        // Update chat UI
+        // 4. Update the chat display
         function updateChat() {
             chatBox.innerHTML = "";
             messages.forEach(msg => {
                 const div = document.createElement('div');
                 div.className = `message ${msg.sender === "you" ? "your-message" : "their-message"}`;
-                div.textContent = msg.text;
+                div.textContent = `${msg.sender}: ${msg.text}`;
                 chatBox.appendChild(div);
             });
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Send message
+        // 5. Send message
         sendButton.addEventListener('click', async () => {
             const text = messageInput.value.trim();
             if (!text) return;
             
-            messages.push({
-                sender: "you",
-                text,
-                time: new Date().toISOString()
-            });
-            
-            await saveMessages(messages);
-            messageInput.value = "";
+            try {
+                const newMessages = [...messages, {
+                    sender: "you",
+                    text: text,
+                    time: new Date().toISOString()
+                }];
+                
+                await saveMessages(newMessages);
+                messageInput.value = "";
+                
+            } catch (err) {
+                alert("Failed to send message. Please try again.");
+            }
         });
 
+        // Press Enter to send
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === "Enter") sendButton.click();
         });
