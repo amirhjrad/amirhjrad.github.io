@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Our Private P2P Chat</title>
+    <title>Iran-Friendly Private Chat</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
         #chat-box { height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll; margin-bottom: 10px; }
@@ -10,188 +10,184 @@
         .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
         .your-message { background-color: #e3f2fd; text-align: right; }
         .their-message { background-color: #f1f1f1; text-align: left; }
-        #connection-status { color: #666; margin-bottom: 10px; }
-        #role-selector { margin-bottom: 15px; }
-        button { margin: 5px; padding: 8px 12px; }
+        #status { color: #666; margin-bottom: 10px; }
+        #login { margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <h1>Our Private Chat 💬</h1>
-    <div id="connection-status">🔴 Disconnected</div>
-    <div id="role-selector">
-        <button id="initiate-btn">Start Chat (You)</button>
-        <button id="join-btn">Join Chat (GF)</button>
+    <h1>Private Chat 💬</h1>
+    <div id="login">
+        <h3>Enter GitHub Token</h3>
+        <input type="password" id="github-token" placeholder="Paste GitHub Token">
+        <button id="login-btn">Connect</button>
     </div>
+    <div id="status">🔴 Disconnected</div>
     <div id="chat-box"></div>
     <input type="text" id="message-input" placeholder="Type your message..." disabled>
     <button id="send-button" disabled>Send</button>
 
     <script>
-        // Password protection
-        const CHAT_PASSWORD = "ourSecret123";
-        const enteredPass = prompt("Enter chat password:");
-        if (enteredPass !== CHAT_PASSWORD) {
-            alert("Wrong password!");
-            window.location.href = "/";
-        }
+        // Config
+        const REPO = "amirhjrad/amirhjrad.github.io"; // e.g., "myusername/myrepo"
+        const CHAT_FILE = "chat-data.json";
+        const POLL_TIMEOUT = 30000; // 30 seconds (GitHub API timeout)
 
-        // WebRTC variables
-        let peerConnection;
-        let dataChannel;
-        let ws;
-        let isInitiator = false;
+        // DOM
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
-        const statusDiv = document.getElementById('connection-status');
-        const roomId = "our-private-room"; // Same for both users
+        const statusDiv = document.getElementById('status');
+        const tokenInput = document.getElementById('github-token');
+        const loginBtn = document.getElementById('login-btn');
 
-        // Using a free public WebSocket server for signaling
-        const wsServer = "wss://free-webrtc-signaling.fly.dev";
+        let githubToken = "";
+        let messages = [];
+        let lastUpdate = 0;
+        let isPolling = false;
 
-        function updateStatus(message, isError = false) {
-            statusDiv.textContent = message;
-            statusDiv.style.color = isError ? "red" : "inherit";
-            console.log(message);
-        }
+        // Login with GitHub Token
+        loginBtn.addEventListener('click', () => {
+            githubToken = tokenInput.value.trim();
+            if (!githubToken) return alert("Enter GitHub Token!");
+            
+            statusDiv.textContent = "🟢 Connected to GitHub";
+            document.getElementById('login').style.display = "none";
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            
+            startLongPolling();
+        });
 
-        async function setupWebSocket() {
-            return new Promise((resolve) => {
-                ws = new WebSocket(wsServer);
-                
-                ws.onopen = () => {
-                    updateStatus("🟢 Connected to signaling server");
-                    ws.send(JSON.stringify({ type: "join", room: roomId }));
-                    resolve();
-                };
-                
-                ws.onerror = (error) => {
-                    updateStatus("🔴 Signaling server error", true);
-                    console.error("WebSocket error:", error);
-                };
-                
-                ws.onmessage = async (event) => {
-                    const message = JSON.parse(event.data);
-                    if (!peerConnection) return;
+        // Long-polling for new messages
+        function startLongPolling() {
+            if (isPolling) return;
+            isPolling = true;
+            
+            const poll = async () => {
+                try {
+                    const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}?t=${Date.now()}`;
+                    const response = await fetch(url, {
+                        headers: { Authorization: `token ${githubToken}` }
+                    });
                     
-                    if (message.type === "offer") {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
-                        const answer = await peerConnection.createAnswer();
-                        await peerConnection.setLocalDescription(answer);
-                        ws.send(JSON.stringify({ type: "answer", room: roomId, sdp: answer }));
-                    } 
-                    else if (message.type === "answer") {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
-                    } 
-                    else if (message.type === "candidate") {
-                        try {
-                            await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
-                        } catch (e) {
-                            console.error("Error adding ICE candidate:", e);
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            await createChatFile();
                         }
+                        throw new Error("Failed to fetch messages");
                     }
-                };
-            });
-        }
-
-        async function createPeerConnection() {
-            peerConnection = new RTCPeerConnection({
-                iceServers: [
-                    { urls: "stun:stun.l.google.com:19302" },
-                    { urls: "stun:stun1.l.google.com:19302" },
-                    { urls: "stun:stun2.l.google.com:19302" }
-                ]
-            });
-
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    ws.send(JSON.stringify({ 
-                        type: "candidate", 
-                        room: roomId, 
-                        candidate: event.candidate 
-                    }));
+                    
+                    const data = await response.json();
+                    const content = JSON.parse(atob(data.content));
+                    
+                    if (content.lastUpdate > lastUpdate) {
+                        lastUpdate = content.lastUpdate;
+                        messages = content.messages;
+                        updateChat();
+                    }
+                    
+                    // Immediately poll again if no error
+                    setTimeout(poll, 100);
+                    
+                } catch (err) {
+                    statusDiv.textContent = "🔴 Error: " + err.message;
+                    console.error(err);
+                    
+                    // Retry after 5 seconds on error
+                    setTimeout(poll, 5000);
                 }
             };
+            
+            poll();
+        }
 
-            if (isInitiator) {
-                dataChannel = peerConnection.createDataChannel("chat");
-                setupDataChannel(dataChannel);
+        // Create chat file if it doesn't exist
+        async function createChatFile() {
+            const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: { Authorization: `token ${githubToken}` },
+                body: JSON.stringify({
+                    message: "Create chat file",
+                    content: btoa(JSON.stringify({
+                        messages: [],
+                        lastUpdate: 0
+                    }))
+                })
+            });
+            
+            if (!response.ok) throw new Error("Failed to create chat file");
+        }
+
+        // Save messages to GitHub
+        async function saveMessages(newMessages) {
+            try {
+                messages = newMessages;
+                lastUpdate = Date.now();
                 
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                ws.send(JSON.stringify({ type: "offer", room: roomId, sdp: offer }));
-            } else {
-                peerConnection.ondatachannel = (event) => {
-                    dataChannel = event.channel;
-                    setupDataChannel(dataChannel);
-                };
+                const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: { Authorization: `token ${githubToken}` },
+                    body: JSON.stringify({
+                        message: "Update chat",
+                        content: btoa(JSON.stringify({
+                            messages,
+                            lastUpdate
+                        })),
+                        sha: await getFileSHA()
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Failed to save");
+                updateChat();
+            } catch (err) {
+                statusDiv.textContent = "🔴 Error saving: " + err.message;
+                console.error(err);
             }
         }
 
-        function setupDataChannel(channel) {
-            channel.onopen = () => {
-                updateStatus("🟢 Connected to each other!");
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-                messageInput.focus();
-            };
-
-            channel.onmessage = (event) => {
-                addMessage(event.data, 'their-message');
-            };
-
-            channel.onclose = () => {
-                updateStatus("🔴 Connection closed", true);
-                messageInput.disabled = true;
-                sendButton.disabled = true;
-            };
+        // Get file SHA (needed for updates)
+        async function getFileSHA() {
+            const url = `https://api.github.com/repos/${REPO}/contents/${CHAT_FILE}`;
+            const response = await fetch(url, {
+                headers: { Authorization: `token ${githubToken}` }
+            });
+            
+            if (!response.ok) return null;
+            const data = await response.json();
+            return data.sha;
         }
 
-        function addMessage(text, className) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${className}`;
-            messageDiv.textContent = text;
-            chatBox.appendChild(messageDiv);
+        // Update chat UI
+        function updateChat() {
+            chatBox.innerHTML = "";
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `message ${msg.sender === "you" ? "your-message" : "their-message"}`;
+                div.textContent = msg.text;
+                chatBox.appendChild(div);
+            });
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Event listeners
-        sendButton.addEventListener('click', () => {
-            const message = messageInput.value;
-            if (message && dataChannel?.readyState === 'open') {
-                dataChannel.send(message);
-                addMessage(message, 'your-message');
-                messageInput.value = '';
-            }
+        // Send message
+        sendButton.addEventListener('click', async () => {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            messages.push({
+                sender: "you",
+                text,
+                time: new Date().toISOString()
+            });
+            
+            await saveMessages(messages);
+            messageInput.value = "";
         });
 
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendButton.click();
-        });
-
-        document.getElementById('initiate-btn').addEventListener('click', async () => {
-            isInitiator = true;
-            updateStatus("🟠 Setting up connection...");
-            try {
-                await setupWebSocket();
-                await createPeerConnection();
-                updateStatus("🟠 Waiting for GF to join...");
-            } catch (error) {
-                updateStatus("🔴 Connection failed", true);
-                console.error(error);
-            }
-        });
-
-        document.getElementById('join-btn').addEventListener('click', async () => {
-            isInitiator = false;
-            updateStatus("🟠 Connecting to you...");
-            try {
-                await setupWebSocket();
-                await createPeerConnection();
-            } catch (error) {
-                updateStatus("🔴 Connection failed", true);
-                console.error(error);
-            }
+            if (e.key === "Enter") sendButton.click();
         });
     </script>
 </body>
