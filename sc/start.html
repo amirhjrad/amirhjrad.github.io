@@ -11,18 +11,20 @@
         .your-message { background-color: #e3f2fd; text-align: right; }
         .their-message { background-color: #f1f1f1; text-align: left; }
         #connection-status { color: #666; margin-bottom: 10px; }
+        #role-selector { margin-bottom: 15px; }
+        button { margin: 5px; padding: 8px 12px; }
     </style>
 </head>
 <body>
     <h1>Our Private Chat 💬</h1>
-    <div id="connection-status">🔴 Not connected</div>
-    <div id="chat-box"></div>
-    <input type="text" id="message-input" placeholder="Type your message..." disabled>
-    <button id="send-button" disabled>Send</button>
-    <div>
+    <div id="connection-status">🔴 Disconnected</div>
+    <div id="role-selector">
         <button id="initiate-btn">Start Chat (You)</button>
         <button id="join-btn">Join Chat (GF)</button>
     </div>
+    <div id="chat-box"></div>
+    <input type="text" id="message-input" placeholder="Type your message..." disabled>
+    <button id="send-button" disabled>Send</button>
 
     <script>
         // Password protection
@@ -36,74 +38,99 @@
         // WebRTC variables
         let peerConnection;
         let dataChannel;
+        let ws;
+        let isInitiator = false;
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const statusDiv = document.getElementById('connection-status');
+        const roomId = "our-private-room"; // Same for both users
 
-        // Simple signaling simulation (using localStorage as fake signaling)
-        function sendSignal(data) {
-            localStorage.setItem('webrtc_signal', JSON.stringify(data));
-            setTimeout(() => localStorage.removeItem('webrtc_signal'), 5000);
+        // Using a free public WebSocket server for signaling
+        const wsServer = "wss://free-webrtc-signaling.fly.dev";
+
+        function updateStatus(message, isError = false) {
+            statusDiv.textContent = message;
+            statusDiv.style.color = isError ? "red" : "inherit";
+            console.log(message);
         }
 
-        function checkForSignal(callback) {
-            const check = setInterval(() => {
-                const signal = localStorage.getItem('webrtc_signal');
-                if (signal) {
-                    clearInterval(check);
-                    callback(JSON.parse(signal));
-                }
-            }, 500);
-            return check;
-        }
-
-        // Set up WebRTC
-        async function createPeerConnection(isInitiator) {
-            peerConnection = new RTCPeerConnection({
-                iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+        async function setupWebSocket() {
+            return new Promise((resolve) => {
+                ws = new WebSocket(wsServer);
+                
+                ws.onopen = () => {
+                    updateStatus("🟢 Connected to signaling server");
+                    ws.send(JSON.stringify({ type: "join", room: roomId }));
+                    resolve();
+                };
+                
+                ws.onerror = (error) => {
+                    updateStatus("🔴 Signaling server error", true);
+                    console.error("WebSocket error:", error);
+                };
+                
+                ws.onmessage = async (event) => {
+                    const message = JSON.parse(event.data);
+                    if (!peerConnection) return;
+                    
+                    if (message.type === "offer") {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
+                        const answer = await peerConnection.createAnswer();
+                        await peerConnection.setLocalDescription(answer);
+                        ws.send(JSON.stringify({ type: "answer", room: roomId, sdp: answer }));
+                    } 
+                    else if (message.type === "answer") {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
+                    } 
+                    else if (message.type === "candidate") {
+                        try {
+                            await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
+                        } catch (e) {
+                            console.error("Error adding ICE candidate:", e);
+                        }
+                    }
+                };
             });
+        }
+
+        async function createPeerConnection() {
+            peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: "stun:stun.l.google.com:19302" },
+                    { urls: "stun:stun1.l.google.com:19302" },
+                    { urls: "stun:stun2.l.google.com:19302" }
+                ]
+            });
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    ws.send(JSON.stringify({ 
+                        type: "candidate", 
+                        room: roomId, 
+                        candidate: event.candidate 
+                    }));
+                }
+            };
 
             if (isInitiator) {
                 dataChannel = peerConnection.createDataChannel("chat");
                 setupDataChannel(dataChannel);
+                
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                ws.send(JSON.stringify({ type: "offer", room: roomId, sdp: offer }));
             } else {
                 peerConnection.ondatachannel = (event) => {
                     dataChannel = event.channel;
                     setupDataChannel(dataChannel);
                 };
             }
-
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    sendSignal({ ice: event.candidate });
-                }
-            };
-
-            if (isInitiator) {
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                sendSignal({ sdp: offer });
-            }
-
-            const signalCheck = checkForSignal(async (signal) => {
-                if (signal.sdp) {
-                    await peerConnection.setRemoteDescription(signal.sdp);
-                    if (!isInitiator) {
-                        const answer = await peerConnection.createAnswer();
-                        await peerConnection.setLocalDescription(answer);
-                        sendSignal({ sdp: answer });
-                    }
-                } else if (signal.ice) {
-                    await peerConnection.addIceCandidate(signal.ice);
-                }
-            });
         }
 
         function setupDataChannel(channel) {
             channel.onopen = () => {
-                statusDiv.textContent = "🟢 Connected!";
-                statusDiv.style.color = "green";
+                updateStatus("🟢 Connected to each other!");
                 messageInput.disabled = false;
                 sendButton.disabled = false;
                 messageInput.focus();
@@ -114,12 +141,12 @@
             };
 
             channel.onclose = () => {
-                statusDiv.textContent = "🔴 Connection closed";
-                statusDiv.style.color = "red";
+                updateStatus("🔴 Connection closed", true);
+                messageInput.disabled = true;
+                sendButton.disabled = true;
             };
         }
 
-        // UI Functions
         function addMessage(text, className) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${className}`;
@@ -128,9 +155,10 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
+        // Event listeners
         sendButton.addEventListener('click', () => {
             const message = messageInput.value;
-            if (message && dataChannel.readyState === 'open') {
+            if (message && dataChannel?.readyState === 'open') {
                 dataChannel.send(message);
                 addMessage(message, 'your-message');
                 messageInput.value = '';
@@ -141,15 +169,29 @@
             if (e.key === 'Enter') sendButton.click();
         });
 
-        // Initiate or join chat
-        document.getElementById('initiate-btn').addEventListener('click', () => {
-            createPeerConnection(true);
-            statusDiv.textContent = "🟠 Waiting for GF to join...";
+        document.getElementById('initiate-btn').addEventListener('click', async () => {
+            isInitiator = true;
+            updateStatus("🟠 Setting up connection...");
+            try {
+                await setupWebSocket();
+                await createPeerConnection();
+                updateStatus("🟠 Waiting for GF to join...");
+            } catch (error) {
+                updateStatus("🔴 Connection failed", true);
+                console.error(error);
+            }
         });
 
-        document.getElementById('join-btn').addEventListener('click', () => {
-            createPeerConnection(false);
-            statusDiv.textContent = "🟠 Connecting to you...";
+        document.getElementById('join-btn').addEventListener('click', async () => {
+            isInitiator = false;
+            updateStatus("🟠 Connecting to you...");
+            try {
+                await setupWebSocket();
+                await createPeerConnection();
+            } catch (error) {
+                updateStatus("🔴 Connection failed", true);
+                console.error(error);
+            }
         });
     </script>
 </body>
