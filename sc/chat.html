@@ -1,0 +1,62 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت امن P2P</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/simplepeer.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">چت امن با عشقم</h1>
+        <div id="chatBox" class="h-96 overflow-y-auto bg-gray-50 p-4 rounded-lg mb-4"></div>
+        <textarea id="signalInput" placeholder="سیگنال دریافتی را اینجا پیست کنید..." class="w-full p-2 border rounded-lg mb-2 h-24"></textarea>
+        <button onclick="connectPeer()" class="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 mb-2">اتصال</button>
+        <input id="messageInput" type="text" placeholder="پیام خود را بنویسید..." class="w-full p-2 border rounded-lg mb-2">
+        <button onclick="sendMessage()" class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">ارسال</button>
+        <textarea id="signalOutput" class="w-full p-2 border rounded-lg mt-2" readonly></textarea>
+        <p class="text-sm text-gray-600 mt-2">سیگنال بالا را کپی کنید و برای طرف مقابل بفرستید.</p>
+    </div>
+    <script src="/js/chat.js"></script>
+</body>
+</html>
