@@ -1,215 +1,155 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Our Private Chat</title>
+    <title>Our Private P2P Chat</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        #chat-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        #chat-box {
-            height: 400px;
-            border: 1px solid #e0e0e0;
-            padding: 15px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            background-color: #fafafa;
-        }
-        #message-input {
-            width: 75%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            outline: none;
-        }
-        #send-button {
-            width: 20%;
-            padding: 10px;
-            margin-left: 5%;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        #send-button:hover {
-            background-color: #45a049;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 10px 15px;
-            border-radius: 18px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-        .your-message {
-            background-color: #dcf8c6;
-            margin-left: auto;
-            border-bottom-right-radius: 5px;
-        }
-        .their-message {
-            background-color: #e5e5ea;
-            margin-right: auto;
-            border-bottom-left-radius: 5px;
-        }
-        .message-time {
-            font-size: 0.7em;
-            color: #666;
-            display: block;
-            margin-top: 3px;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #clear-chat {
-            display: block;
-            margin: 15px auto 0;
-            padding: 8px 15px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #clear-chat:hover {
-            background-color: #d32f2f;
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        #chat-box { height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll; margin-bottom: 10px; }
+        #message-input { width: 70%; padding: 8px; }
+        #send-button { width: 25%; padding: 8px; }
+        .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
+        .your-message { background-color: #e3f2fd; text-align: right; }
+        .their-message { background-color: #f1f1f1; text-align: left; }
+        #connection-status { color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div id="chat-container">
-        <h1>Our Private Chat 💬</h1>
-        <div id="chat-box"></div>
-        <div id="input-area">
-            <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off">
-            <button id="send-button">Send</button>
-        </div>
-        <button id="clear-chat">Clear Chat History</button>
+    <h1>Our Private Chat 💬</h1>
+    <div id="connection-status">🔴 Not connected</div>
+    <div id="chat-box"></div>
+    <input type="text" id="message-input" placeholder="Type your message..." disabled>
+    <button id="send-button" disabled>Send</button>
+    <div>
+        <button id="initiate-btn">Start Chat (You)</button>
+        <button id="join-btn">Join Chat (GF)</button>
     </div>
 
     <script>
-        // Configuration - CHANGE THESE
-        const CHAT_PASSWORD = "343528"; 
-        const PARTNER_NAME = "M";
-        const YOUR_NAME = "H";
-        
         // Password protection
-        function checkPassword() {
-            const savedPassword = localStorage.getItem('chatPassword');
-            if (!savedPassword) {
-                const enteredPassword = prompt("Set a password for your private chat:");
-                if (enteredPassword) {
-                    localStorage.setItem('chatPassword', enteredPassword);
-                    CHAT_PASSWORD = enteredPassword; // Update the password
-                } else {
-                    window.location.href = "/";
-                }
-            } else {
-                const enteredPassword = prompt("Enter chat password:");
-                if (enteredPassword !== localStorage.getItem('chatPassword')) {
-                    alert("Incorrect password");
-                    window.location.href = "/";
-                }
-            }
+        const CHAT_PASSWORD = "ourSecret123";
+        const enteredPass = prompt("Enter chat password:");
+        if (enteredPass !== CHAT_PASSWORD) {
+            alert("Wrong password!");
+            window.location.href = "/";
         }
-        
-        checkPassword();
-        
-        // Chat functionality
+
+        // WebRTC variables
+        let peerConnection;
+        let dataChannel;
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
-        const clearButton = document.getElementById('clear-chat');
-        
-        // Load chat history
-        let chatHistory = JSON.parse(localStorage.getItem('privateChat')) || [];
-        
-        // Display messages with nice formatting
-        function displayMessages() {
-            chatBox.innerHTML = '';
-            chatHistory.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${msg.sender === 'you' ? 'your-message' : 'their-message'}`;
-                
-                const senderName = document.createElement('strong');
-                senderName.textContent = msg.sender === 'you' ? YOU_NAME : PARTNER_NAME;
-                
-                const messageText = document.createElement('div');
-                messageText.textContent = msg.text;
-                
-                const timeSpan = document.createElement('span');
-                timeSpan.className = 'message-time';
-                timeSpan.textContent = formatTime(msg.timestamp);
-                
-                messageDiv.appendChild(senderName);
-                messageDiv.appendChild(messageText);
-                messageDiv.appendChild(timeSpan);
-                chatBox.appendChild(messageDiv);
+        const statusDiv = document.getElementById('connection-status');
+
+        // Simple signaling simulation (using localStorage as fake signaling)
+        function sendSignal(data) {
+            localStorage.setItem('webrtc_signal', JSON.stringify(data));
+            setTimeout(() => localStorage.removeItem('webrtc_signal'), 5000);
+        }
+
+        function checkForSignal(callback) {
+            const check = setInterval(() => {
+                const signal = localStorage.getItem('webrtc_signal');
+                if (signal) {
+                    clearInterval(check);
+                    callback(JSON.parse(signal));
+                }
+            }, 500);
+            return check;
+        }
+
+        // Set up WebRTC
+        async function createPeerConnection(isInitiator) {
+            peerConnection = new RTCPeerConnection({
+                iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
             });
+
+            if (isInitiator) {
+                dataChannel = peerConnection.createDataChannel("chat");
+                setupDataChannel(dataChannel);
+            } else {
+                peerConnection.ondatachannel = (event) => {
+                    dataChannel = event.channel;
+                    setupDataChannel(dataChannel);
+                };
+            }
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    sendSignal({ ice: event.candidate });
+                }
+            };
+
+            if (isInitiator) {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                sendSignal({ sdp: offer });
+            }
+
+            const signalCheck = checkForSignal(async (signal) => {
+                if (signal.sdp) {
+                    await peerConnection.setRemoteDescription(signal.sdp);
+                    if (!isInitiator) {
+                        const answer = await peerConnection.createAnswer();
+                        await peerConnection.setLocalDescription(answer);
+                        sendSignal({ sdp: answer });
+                    }
+                } else if (signal.ice) {
+                    await peerConnection.addIceCandidate(signal.ice);
+                }
+            });
+        }
+
+        function setupDataChannel(channel) {
+            channel.onopen = () => {
+                statusDiv.textContent = "🟢 Connected!";
+                statusDiv.style.color = "green";
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            };
+
+            channel.onmessage = (event) => {
+                addMessage(event.data, 'their-message');
+            };
+
+            channel.onclose = () => {
+                statusDiv.textContent = "🔴 Connection closed";
+                statusDiv.style.color = "red";
+            };
+        }
+
+        // UI Functions
+        function addMessage(text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-        
-        // Format timestamp
-        function formatTime(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        // Send message
-        function sendMessage() {
-            const messageText = messageInput.value.trim();
-            if (messageText) {
-                // Add your message
-                chatHistory.push({
-                    text: messageText,
-                    sender: 'you',
-                    timestamp: new Date().getTime()
-                });
-                
-                // Save to local storage
-                localStorage.setItem('privateChat', JSON.stringify(chatHistory));
+
+        sendButton.addEventListener('click', () => {
+            const message = messageInput.value;
+            if (message && dataChannel.readyState === 'open') {
+                dataChannel.send(message);
+                addMessage(message, 'your-message');
                 messageInput.value = '';
-                displayMessages();
-                
-                // Here you could add code to sync with another device if needed
             }
-        }
-        
-        // Clear chat history
-        function clearChat() {
-            if (confirm("Are you sure you want to clear all chat history?")) {
-                localStorage.removeItem('privateChat');
-                chatHistory = [];
-                displayMessages();
-            }
-        }
-        
-        // Event listeners
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
         });
-        clearButton.addEventListener('click', clearChat);
-        
-        // Initial display
-        displayMessages();
-        
-        // Focus the input field when page loads
-        window.addEventListener('load', () => {
-            messageInput.focus();
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendButton.click();
+        });
+
+        // Initiate or join chat
+        document.getElementById('initiate-btn').addEventListener('click', () => {
+            createPeerConnection(true);
+            statusDiv.textContent = "🟠 Waiting for GF to join...";
+        });
+
+        document.getElementById('join-btn').addEventListener('click', () => {
+            createPeerConnection(false);
+            statusDiv.textContent = "🟠 Connecting to you...";
         });
     </script>
 </body>
