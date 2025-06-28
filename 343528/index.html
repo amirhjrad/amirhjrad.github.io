@@ -1,0 +1,134 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شلام</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #ffccff, #ff99cc);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Vazirmatn', sans-serif;
+      margin: 0;
+    }
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.7; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .explode {
+      animation: explode 1s ease-in-out forwards;
+    }
+    .heart {
+      color: #ff0000;
+      font-size: 3rem;
+      animation: fadeIn 2s ease-in;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="gameContainer" class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+    <h1 class="text-2xl font-bold text-pink-600 mb-4">خب مانای من اول به این سوالا جواب بده</h1>
+    <div id="stage1" class="stage">
+      <p class="mb-4">سوال اول: اولین جایی که باهم درد و دل کردیم کجا بود؟</p>
+      <input id="answer1" type="text" class="border p-2 w-full mb-4 rounded" placeholder="جوابت رو بنویس">
+      <button onclick="checkAnswer1()" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">بررسی</button>
+    </div>
+    <div id="stage2" class="stage hidden">
+      <p class="mb-4">سوال دوم: اولین چیزی که وقتی اومدیم تو رابطه تبدیل شدی بهش چی بود؟</p>
+      <input id="answer2" type="text" class="border p-2 w-full mb-4 rounded" placeholder="جوابت رو بنویس">
+      <button onclick="checkAnswer2()" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">بررسی</button>
+    </div>
+    <div id="stage3" class="stage hidden">
+      <p class="mb-4">سوال آخر: فقط روی قلب کلیک کن!</p>
+      <button onclick="finalStage()" class="text-4xl bg-transparent border-none cursor-pointer">❤️</button>
+    </div>
+  </div>
+  <div id="finalMessage" class="hidden text-center w-full h-full absolute top-0 left-0 flex justify-center items-center">
+    <h1 class="heart text-4xl">خیلی خیلی خیلی دوست دارم مانای من ❤️</h1>
+  </div>
+
+  <script>
+    function checkAnswer1() {
+      const answer = document.getElementById('answer1').value.trim().toLowerCase();
+      if (answer === 'پارک' || answer === 'park') {
+        document.getElementById('stage1').classList.add('hidden');
+        document.getElementById('stage2').classList.remove('hidden');
+      } else {
+        alert('جواب اشتباهه! یه بار دیگه فکر کن 😊');
+      }
+    }
+
+    function checkAnswer2() {
+      const answer = document.getElementById('answer2').value.trim().toLowerCase();
+      if (answer === 'زندگی تو' || answer === 'movie') {
+        document.getElementById('stage2').classList.add('hidden');
+        document.getElementById('stage3').classList.remove('hidden');
+      } else {
+        alert('جواب اشتباهه! یادت بیاد کدوم فیلم بود 😘');
+      }
+    }
+
+    function finalStage() {
+      const gameContainer = document.getElementById('gameContainer');
+      const finalMessage = document.getElementById('finalMessage');
+      gameContainer.classList.add('explode');
+      setTimeout(() => {
+        gameContainer.style.display = 'none';
+        finalMessage.classList.remove('hidden');
+      }, 1000); // صبر برای اتمام انیمیشن
+    }
+  </script>
+</body>
+</html>
