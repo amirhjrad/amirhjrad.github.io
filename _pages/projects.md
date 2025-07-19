@@ -9,7 +9,7 @@ author_profile: true
 Explore my work in Digital Systems, Hardware Design, and interdisciplinary applications. Click a project title to view full details and access the source code.
 
 <div class="projects-list">
-  <div class="project-item" data-project="neural-accelerator">
+  <div class="project-item">
     ### FPGA-Based Neural Network Accelerator
 
     <div class="project-details" markdown="1">
@@ -34,7 +34,7 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
     </div>
   </div>
 
-  <div class="project-item" data-project="ecg-processor">
+  <div class="project-item">
     ### Real-Time ECG Signal Processing
 
     <div class="project-details" markdown="1">
@@ -59,7 +59,7 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
     </div>
   </div>
 
-  <div class="project-item" data-project="aes-module">
+  <div class="project-item">
     ### Hardware-Optimized AES Module
 
     <div class="project-details" markdown="1">
@@ -84,7 +84,7 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
     </div>
   </div>
 
-  <div class="project-item" data-project="smart-home">
+  <div class="project-item">
     ### Smart Home Automation Controller
 
     <div class="project-details" markdown="1">
@@ -115,7 +115,7 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
     margin-top: 20px;
   }
   .project-item {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e0e0e0;
     padding: 15px 0;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -125,7 +125,8 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
   }
   .project-item h3 {
     margin: 0;
-    color: #222;
+    color: #333;
+    font-size: 1.5em;
   }
   .project-details {
     max-height: 0;
@@ -133,19 +134,19 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
     margin-top: 10px;
     padding: 0 10px;
     background-color: #fff;
-    border: 1px solid #eee;
+    border: 1px solid #e0e0e0;
     border-radius: 4px;
-    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), padding 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .project-details.active {
-    max-height: 1000px; /* Adjust based on content size */
+    max-height: 2000px; /* Increased for longer content */
     padding: 10px;
   }
   .project-details p, .project-details ul {
-    margin: 5px 0;
+    margin: 8px 0;
   }
   .project-details a {
-    color: #0066cc;
+    color: #007bff;
     text-decoration: none;
   }
   .project-details a:hover {
@@ -153,11 +154,14 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
   }
   .project-details h4 {
     color: #333;
-    margin-top: 10px;
+    margin: 12px 0 8px;
   }
   @media (max-width: 600px) {
     .project-item {
       padding: 10px 0;
+    }
+    .project-item h3 {
+      font-size: 1.3em;
     }
   }
 </style>
@@ -170,12 +174,14 @@ Explore my work in Digital Systems, Hardware Design, and interdisciplinary appli
         if (e.target.tagName !== 'A') {
           const details = this.querySelector('.project-details');
           const isActive = details.classList.contains('active');
+          
           // Close all other details
           document.querySelectorAll('.project-details').forEach(d => {
             d.classList.remove('active');
             d.style.maxHeight = '0';
             d.style.padding = '0 10px';
           });
+          
           // Toggle current details
           if (!isActive) {
             details.classList.add('active');
