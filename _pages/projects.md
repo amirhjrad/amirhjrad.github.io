@@ -15,7 +15,7 @@ author_profile: true
     🔗 <a href="https://github.com/yourusername/wavelet-snn-classifier" target="_blank">View on GitHub</a>
   </p>
 </details>
-
+<br>
 
 <details>
   <summary>
