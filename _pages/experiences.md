@@ -63,6 +63,7 @@ author_profile: true
     <img src="https://systemc.org/images/systemc.png" alt="SystemC" width="45" height="45"/>
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKzI3ged2abNeNzFBCQ9P2jFhrPVPXCTzqxQ&s" alt="HSpice" width="45" height="45"/>
     <img src="https://downloadlynet.ir/wp-content/uploads/2020/03/ModelSim.png" alt="Modelsim" width="45" height="45"/>
+    <img src="https://usoftly.ir/wp-content/uploads/2022/02/Mentor-Graphics-QuestaSim-2021.1-Win.png" alt="Modelsim" width="45" height="45"/>
     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/anaconda/anaconda-original.svg" alt="anaconda" width="45" height="45"/>
     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="python" width="45" height="45"/>
     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="tensorflow" width="45" height="45"/>
