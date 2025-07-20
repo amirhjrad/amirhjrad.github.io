@@ -4,14 +4,225 @@ title: "Projects"
 author_profile: true
 ---
 <br>
+
 <details>
   <summary>
-    <strong>amirhjrad</strong>
+    <strong>[HW] Modular SPI Master and Slave Design with Flexible CPOL, CPHA, and Packet Width in Verilog</strong>
   </summary>
   <p>
-    About Me
+    Designed a modular SPI master and slave supporting different CPOL and CPHA along with different packet width, enabling flexible serial communication.
     <br>
-    🔗 <a href="https://github.com/amirhjrad/amirhjrad" target="_blank">View on GitHub</a>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Four-Bit Counter Verification using UVM: Focusing on Basic Concepts</strong>
+  </summary>
+  <p>
+    Testing a four-bit counter using universal verification methodology (UVM) focusing on basic concepts, Sequencer, Driver, etc.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Super Scaler Pipeline Processor with Custom 32-bit ISA for Increased Throughput</strong>
+  </summary>
+  <p>
+      Designed a Super Scaler Pipeline Processor, with fully customized 32bit Instruction Set Architecture (ISA), aiming to increase the throughput.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Pipelined ARM Processor Design: Hazard Unit vs Forwarding Unit in Xilinx Vivado</strong>
+  </summary>
+  <p>
+     Designed a pipelined ARM processor, exploring the differences between leveraging hazard unit and forwarding unit in terms of latency using Xilinx Vivado.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Modular Hardware-Based SHA256 Accelerator in Verilog for Cryptography Applications</strong>
+  </summary>
+  <p>
+     Designed modular hardware-based SHA256, aiming to accelerate hash generating built on SHA256 algorithm in the field of Cryptography using Verilog.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] RGB Segmentation Hardware using Spiking Neural Networks (SNN) for Crosswalk Detection in Roads</strong>
+  </summary>
+  <p>
+     Design a hardware for RGB segmentation based on spiking neural networks (SNN) to detect crosswalks in the roads using Verilog and Q16.16 fixed-point binary representation.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] CNN-Based Pattern Finder: Bus Functional and RTL Design in SystemC</strong>
+  </summary>
+  <p>
+    Design both bus functional and RT level design of a Pattern Finder using CNNs (Convolutional Neural Networks) to detect specific patterns of its input image using systemC.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/CNN" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] RISC-V Processors: Single-Cycle, Multi-Cycle, and Pipelined Designs in Verilog</strong>
+  </summary>
+  <p>
+    Designed single-cycle, multi-cycle, and pipeline RISC-V processors in Verilog, developing instruction sets, control units, and datapaths, with strong expertise in computer architecture and instruction pipelining.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/Risc-v" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Evaluating FIR Filters: Floating-Point vs Fixed-Point Resource Sharing in MATLAB Simulink</strong>
+  </summary>
+  <p>
+     Evaluating FIR Filters using MATLAB Simulink in order to compare the influence of floating-point and fixed-point in resource sharing.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/ESL_2" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] FIR Calculation Hardware Accelerator Design for NIOS II on Altera FPGA</strong>
+  </summary>
+  <p>
+    Designing a hardware accelerator for FIR calculation based on the NIOS II processor of Altera FPGA board.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Noise Reduction FIR Filter Design: MATLAB and Verilog Integration</strong>
+  </summary>
+  <p>
+    Designing a FIR filter for the purpose of noise reduction using the integration of MATLAB and Verilog.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Wallace Tree Multiplier Design with Critical Path Analysis in HSpice</strong>
+  </summary>
+  <p>
+     Designing a multiplier using Wallace Tree Algorithm using HSpice in order to find critical path and evaluate its potential violations (hold time/ setup time violation).
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/VLSI_WALLACE" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Gate Dimension Impact on Power Consumption and Delay in HSpice</strong>
+  </summary>
+  <p>
+    Investigating the effect of gate dimensions on power consumption and delay using HSpice and required library
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/VLSI_CA2" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Leros Processor Design using Chisel Library</strong>
+  </summary>
+  <p>
+      Designing Leros Processor using Chisel library comparing its advantages compared to hardware description languages.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/ESL_leros" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Multi-Channel Synchronous Serial Demultiplexer (MSSD) RTL Design in Verilog</strong>
+  </summary>
+  <p>
+     Designed RTL architecture of a multi-channel synchronous serial demultiplexer (MSSD) in Verilog, ensuring seamless multi-channel communication with proficient logic design and synchronization.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/MSSD" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] High-Performance Selection Sorter RTL Design in Verilog</strong>
+  </summary>
+  <p>
+      Developed a high-performance Selection Sorter RTL in Verilog, demonstrating expertise in efficient sorting algorithms, RTL coding, and hardware optimization.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/SSC" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Optimized Bubble Sort Hardware Architecture in Verilog</strong>
+  </summary>
+  <p>
+     Designed and implemented a robust Bubble Sort hardware architecture in Verilog, optimizing sorting algorithms for performance and demonstrating proficiency in coding and hardware optimization.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/BubbleSorter" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Transistor-Level Verilog to Assign Statement Conversion using Boolean Algebra</strong>
+  </summary>
+  <p>
+     Developed a C++ program able to convert transistor level Verilog codes to “assign” statements in order to redesign existing designs using Boolean Algebra equations.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/OO_1" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[HW] Accelerated Selection Sorter Circuit Design using SystemC</strong>
+  </summary>
+  <p>
+     Design a Selection Sorter Circuit (SSC) to accelerate its timing and enhance sequential circuit using systemC hardware design language.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/SSC_SC" target="_blank">View on GitHub</a>
+  </p>
+</details>
+
+
+<details>
+  <summary>
+    <strong>[HW] Layout Design</strong>
+  </summary>
+  <p>
+     Layout design using L-edit and S-edit regarding certain design rules in VLSI course.
+    <br>
+    🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a>
   </p>
 </details>
 
