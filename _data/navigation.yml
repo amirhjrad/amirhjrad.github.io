@@ -12,12 +12,14 @@ main:
   - title: "Education"
     url: /education/
 
-  - title: "Experiences"
-    url: /experiences/
+  - title: "Projects"
+    url: /projects/
 
   - title: "Publications"
     url: /publications/
 
+  - title: "Experiences"
+    url: /experiences/
 
   # - title: "Talks"
   #   url: /talks/    
