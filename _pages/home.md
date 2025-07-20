@@ -11,5 +11,5 @@ redirect_from:
 <br>
 
 # Welcome to My Website! 
- Hi! I'm Amirhesam Jafari Rad, a passionate Digital Systems and Hardware Design student from the University of Tehran. 
+ Hi! I'm Amirhesam Jafari Rad, an Electrical Engineering student from the University of Tehran. 
 
