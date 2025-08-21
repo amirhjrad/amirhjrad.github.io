@@ -5,6 +5,63 @@ author_profile: true
 ---
 <br>
 
+
+<details>
+  <summary>
+    <strong>[SW] Diffusion Model for MNIST Image Generation</strong>
+  </summary>
+  <p>
+    This project provides a implementation of a Denoising Diffusion Probabilistic Model (DDPM) to generate images of handwritten digits. The model is trained from scratch on the well-known MNIST dataset.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[SW] CycleGAN Implementation for Horse-to-Zebra Translation</strong>
+  </summary>
+  <p>
+    This project implements a CycleGAN, a model for unpaired image-to-image translation, applied to the horse2zebra dataset.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[SW] Pix2Pix Conditional GAN</strong>
+  </summary>
+  <p>
+    This project implements a pix2pix Generative Adversarial Network (GAN), a type of Conditional GAN (cGAN), for image-to-image translation, specifically converting satellite images to maps. The architecture is based on the original pix2pix paper by Isola et al. (2017), using a U-Net Generator and a PatchGAN Discriminator.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
+    <strong>[SW] Face Morphing Using a VAE</strong>
+  </summary>
+  <p>
+    This project implements a Variational Autoencoder (VAE) to generate human faces using the LFW (Labeled Faces in the Wild) dataset. The VAE is trained to learn a latent representation of face images and then generate new faces by sampling from this latent space.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+
+<details>
+  <summary>
+    <strong>[SW] Image Inpating Using AE</strong>
+  </summary>
+  <p>
+    Designed a Autoencoder for the purpose of reconstruction of damaged images using the CIFAR-10 dataset.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
 <details>
   <summary>
     <strong>[HW] Modular SPI Master and Slave Design with Flexible CPOL, CPHA, and Packet Width in Verilog</strong>

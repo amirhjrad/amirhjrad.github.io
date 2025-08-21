@@ -17,7 +17,8 @@ author_profile: true
 ## **TEACHING ASSISTANT EXPERIENCES**
 
 ### University of Tehran:
-- **Logic Circuits** (Feb 2025 - Present) | Dr. Saeed Safari  
+- **Logic Circuits** (Feb 2025 - Aug 2025) | Dr. Saeed Safari
+- **Electronic System Level Design Methodologies (ESL)** (Feb 2025 - Jul 2025) | Dr. Bijan Alizadeh  
 - **Logic Circuits/Digital Systems I** (Sep 2024 - Feb 2025) | Prof. Zain Navabi  
 - **Electromagnetics** (Oct 2023 - Jan 2024) | Dr. Leila Yousefi  
 - **Engineering Mathematics** (Sep 2023 - Jan 2024) | Dr. Rezvan Nasiri  
@@ -55,7 +56,7 @@ author_profile: true
     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" alt="visual studio" width="45" height="45"/>
     <img src="https://www.svgrepo.com/show/374163/verilog.svg" alt="Verilog" width="45" height="45"/>
     <img src="https://www.syosil.com/images/systemverilog-logo.jpg" alt="SystemVerilog" width="45" height="45"/>
-    <img src="https://blog.kakaocdn.net/dna/wYZws/btsGR0sgLGE/AAAAAAAAAAAAAAAAAAAAAC5mY4OJucfaKvfZembTQhF-3IQ3Qe76Bh72X_mAFowh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1753973999&allow_ip=&allow_referer=&signature=w73MwQJeQDNU%2Bl48uJ7Nc59UkyI%3D" alt="UVM" width="45" height="45"/>
+    <img src="https://codasip.com/wp-content/uploads/2023/05/UVM-logo.png" alt="UVM" width="45" height="45"/>
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL-ls0CtgL8yzPN71HfAyOiqV41LCa2-GcbQ&s" alt="VHDL" width="45" height="45"/>
     <img src="https://icons.veryicon.com/png/o/miscellaneous/cloud-computing-foundation-internet-of-things/fpga.png" alt="FPGA" width="45" height="45"/>
     <img src="https://dl.flathub.org/media/com/github/corna.Vivado/07ad2cd5a0a53383dce2081f799f9726/icons/128x128@2/com.github.corna.Vivado.png" alt="Vivado" width="45" height="45"/>
