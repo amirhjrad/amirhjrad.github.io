@@ -53,7 +53,7 @@ author_profile: true
 
 <details>
   <summary>
-    <strong>[SW] Image Inpating Using AE</strong>
+    <strong>[SW] Image Inpainting Using AE</strong>
   </summary>
   <p>
     Designed a Autoencoder for the purpose of reconstruction of damaged images using the CIFAR-10 dataset.
