@@ -41,6 +41,17 @@ author_profile: true
 
 <details>
   <summary>
+    <strong>[SW] Face Morphing Using a GAN</strong>
+  </summary>
+  <p>
+    This report details the implementation and evaluation of a Generative Adversarial Network (GAN) designed to generate and morph human face images.
+    <br>
+    <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
+  </p>
+</details>
+
+<details>
+  <summary>
     <strong>[SW] Face Morphing Using a VAE</strong>
   </summary>
   <p>
