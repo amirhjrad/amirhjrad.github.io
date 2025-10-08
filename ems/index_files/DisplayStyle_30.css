@@ -1,0 +1,146 @@
+/*@font-face {
+  font-family: 'Golestan Koodak';
+  src: url("/_fonts/Golestan Koodak.ttf") format("truetype"); 
+}
+
+@font-face {
+  font-family: 'Golestan System';
+  src: url("/_fonts/Golestan System.ttf") format("truetype"); 
+}*/
+
+
+.DisplayStyle_30 .CRepDate {
+  font-size: 8pt;
+  color: #000099;
+  font-family: 'Golestan Koodak';
+}
+.DisplayStyle_30 .CRepTitle {
+  font-size: 13pt;
+  color: #000000;
+  font-family: 'Golestan Koodak';
+}
+.DisplayStyle_30 .CUnivName {
+  font-size: 9pt;
+  color: #003333;
+  font-family: 'Golestan Koodak';
+}
+.DisplayStyle_30 .CB_L {
+  font-size: 9pt;
+  /*color: #000066;*/
+  font-family: 'iransans','Golestan Koodak';
+}
+.DisplayStyle_30 .CHeaderT3 {
+  font-size: 11pt;
+  color: #ffffff;
+  font-family: 'Golestan Koodak';
+  background-color: #6699cc;
+}
+.DisplayStyle_30 .CTable3 {
+  font-size: 8pt;
+  font-family: 'Golestan System';
+  background-color: #dcd9ff;
+}
+.DisplayStyle_30 .CFixComment {
+  font-size: 8pt;
+  font-family: 'Golestan System';
+  text-align: right;
+}
+.DisplayStyle_30 .CComment {
+  font-size: 8pt;
+  font-family: 'Golestan System';
+  text-align: right;
+}
+.DisplayStyle_30 .CComment_1 {
+  font-size: 8pt;
+  font-family: 'Golestan System';
+  text-align: right;
+}
+.DisplayStyle_30 .CComment_2 {
+  font-size: 8pt;
+  font-family: 'Golestan System';
+  text-align: right;
+}
+.DisplayStyle_30 .CTDData {
+  border-right: #cccccc 1px solid;
+  padding-right: 2px;
+}
+.DisplayStyle_30 Body {
+  background-color: #dfffe0;
+}
+.DisplayStyle_30 Pre {
+  font-size: 8pt;
+  font-family: 'Golestan System ';
+}
+.DisplayStyle_30 .CCheckBox {
+  border-right: blue 1px solid;
+  border-top: blue 1px solid;
+  border-left: blue 1px solid;
+  width: 30px;
+  color: blue;
+  border-bottom: blue 1px solid;
+  height: 18px;
+  background-color: #ffffcc;
+}
+.DisplayStyle_30 .CTextBox {
+  border-right: blue 1px solid;
+  padding-right: 2px;
+  border-top: blue 1px solid;
+  font-size: 8pt;
+  behavior: url(/_styles/TextBox.htc);
+  border-left: blue 1px solid;
+  width: 50px;
+  color: blue;
+  border-bottom: blue 1px solid;
+  font-family: Golestan System;
+  height: 18px;
+  background-color: #ffffcc;
+}
+.DisplayStyle_30 .CComboBox {
+  padding-right: 2px;
+  font-size: 8pt;
+  color: blue;
+  font-family: Golestan System;
+  height: 25px;
+  background-color: #ffffcc;
+}
+.DisplayStyle_30 .CHeaderSetting {
+  table-layout: fixed;
+  font-weight: bold;
+  font-size: 10pt;
+  color: maroon;
+  font-family: 'Golestan System';
+}
+.DisplayStyle_30 .CBodySetting {
+  table-layout: fixed;
+  font-size: 8pt;
+  font-family: 'Golestan System';
+}
+.DisplayStyle_30 .CDIVSetting {
+  border-right: 1px solid;
+  border-top: 1px solid;
+  left: 150px;
+  border-left: 1px solid;
+  width: 250px;
+  border-bottom: 1px solid;
+  position: absolute;
+  top: 110px;
+  background-color: #99ccff;
+  Filter: progid:DXImageTransform.Microsoft.fade(motion=out, orientation=vertical);
+}
+.DisplayStyle_30 .CTDSelect {
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#99ccff, EndColorStr=#ee82ee);
+}
+.DisplayStyle_30 .Comm {
+  behavior: url(/_styles/Comm_Butt.HTC);
+}
+.DisplayStyle_30 .B {
+  font-family: 'iransans','Golestan SYSTEM', TAHOMA;
+  font-size: 11PX;
+}
+
+.DisplayStyle_30 .B_UNV0015
+{
+	font-family:'Golestan Nazanin',TAHOMA;
+	font-weight: BOLD;
+	font-size:13PX;
+}

@@ -1,0 +1,368 @@
+﻿(function($,np){
+$.widget("np.BAS0203_CMP_REP_MultiFilter", $.np.npform, {
+	options : {
+	    fname: 'BAS0203_CMP_REP_MultiFilter',
+	    ftitle:'چندفيلتري گزارشها'
+	},
+	_create : function() {
+		var self=this,
+			op=self.options,
+			e=self.element;
+
+        
+op.AFZD_OnClk= function (myEvent,p) { 
+p=p||{}; return self.DoAct('C1',myEvent,p )};
+
+        op.AfterLoad=function(){
+        
+            
+        
+        };
+		
+        this._super();
+		
+        
+        
+        //$(window).on('resize' + self.eventNamespace, $.proxy(self.ResizeHandler, self));
+		        
+        self.ResizeHandler();
+
+	},
+    DoAct:function(act,HelpId,Params){
+  var self = this, e = self.element, op = self.options;
+  if (act=='08'){
+	self._trigger('ShowBtn');
+  }
+  else{
+	self._super.apply(this,arguments);
+  }
+},
+BeforeBinding:function(){
+  var self = this, e = self.element, op = self.options;
+  self.V_.MaxSortSeq=20;
+  self.FRM_ViewModel = self.ViewModel;
+  
+  self.FRM_ViewModel['vm_SortId']=ko.observable(self.MakeFullId('AFYy'))(); 
+  self.FRM_ViewModel['_Items'+np.OPTOPT]=ko.observableArray([]);
+  self.FRM_ViewModel['vm_AddTmpl'] = ko.observable(self.MakeFullId('AnGA'))
+  self.FRM_ViewModel['vm_ClearTmpl'] = ko.observable(self.MakeFullId('AnGB'))
+  self.FRM_ViewModel['vm_CloseTmpl'] = ko.observable(self.MakeFullId('AnGC'))
+  self.FRM_ViewModel['vm_CollapsedTmpl'] = ko.observable(self.MakeFullId('AFZB'))
+  self.FRM_ViewModel['vm_ExpandedTmpl'] = ko.observable(self.MakeFullId('AFZC'))
+  self.FRM_ViewModel['vm_TmplName'] = ko.observable(self.MakeFullId('AFWK'))
+  
+  
+  
+  
+  self.FRM_ViewModel['vm_Tmpl_OPT'] =
+  function ($data, bindingContext) {
+    var MyRoot = bindingContext.$root;
+    return MyRoot['_Items'+np.OPTOPT]();
+  } 
+  self.FRM_ViewModel['vm_GetTitle'] =
+  function ($data, bindingContext) {
+	var Radif=0,Cnt=0;
+	var ThisFlts=ko.utils.arrayFilter(self.FRM_ViewModel['_Items'+np.OPTOPT](),function(c){
+	  if($data.Seq==c.Seq){
+	    Cnt++;
+	    if($data.Number==c.Number)
+		  Radif=Cnt;
+	  }
+	  return ($data.Seq==c.Seq);
+	});
+	if(ThisFlts.length==1)
+       return self.V_.FiltersStruc2[$data.Seq].Title;
+	return self.V_.FiltersStruc2[$data.Seq].Title+'-'+Radif;
+  } 
+  self.FRM_ViewModel['vm_ShowAddClose'] =
+  function ($data,button) {
+	var ThisFlts=ko.utils.arrayFilter(self.FRM_ViewModel['_Items'+np.OPTOPT](),function(c){
+	  return ($data.Seq==c.Seq);
+	});
+	if(button=='close')
+	  return ThisFlts.length>1;
+	var MaxFilter=self.V_.FiltersStruc2[$data.Seq].MaxFilter;
+    return ThisFlts.length<MaxFilter;
+  }  
+  self.FRM_ViewModel['vm_RowClick'] =
+  function ($data,ev,$index) {
+	console.log($data);
+	$data.Expanded(!$data.Expanded());
+    return true;
+  }  
+  self.FRM_ViewModel['vm_ClickAdd'] =
+  function ($data,ev,$index) {
+    var master=self.V_.FiltersStruc2[$data.Seq];
+	var item={Seq:$data.Seq,Number:++master.Numbers,orgid:('x_'+$data.Seq+'_'+master.Numbers),Class:'col-lg-10 col-12 collapse show'};
+	item.id=self.MakeFullId(item.orgid);
+	item.Expanded=ko.observable(true);
+	if($(ev.currentTarget).parent().attr('aria-expanded')=='false')
+	  ev.stopPropagation();
+    self.FRM_ViewModel['_Items'+np.OPTOPT].splice($index+1,0,item);
+    return true;
+  }  
+  self.FRM_ViewModel['vm_ClickClose'] =
+  function ($data,ev,$index) {
+	var item=self.FRM_ViewModel['_Items'+np.OPTOPT]()[$index];
+	self?.ValidationDelete(item.orgid);
+	delete self.W_.FrmFld[item.orgid];
+	delete self.$ValidXml.r.n[item.orgid];
+    self.FRM_ViewModel['_Items'+np.OPTOPT].remove(item);
+    return true;
+  }  
+  self.FRM_ViewModel['vm_ClickClear'] =
+  function ($data,ev,$index) {
+	var item=self.FRM_ViewModel['_Items'+np.OPTOPT]()[$index];
+	var id=item.orgid;
+    var DYNACMP=self.GetCmpSelf(id);
+    DYNACMP.ResetClick(false);
+	ev.stopPropagation();
+    return false;
+  }  
+  self.FRM_ViewModel['AfterRender'] = 
+  function(Element, Data) {
+	var id=Data.orgid;
+	self.CreateDynaComponent({id:id,Req:'1'},function(){
+	  var DYNACMP=self.GetCmpSelf(id);
+      self.Validation({f:[id],Mode:'all',Cond:'all',Disa:'false'});
+  
+	  DYNACMP.Val('BHZ',self.V_.FiltersStruc2[Data.Seq].Layout);
+	  DYNACMP.EnableAllField=true;
+	  DYNACMP.options.AfterReady0245=Data.AfterReady0245;
+      DYNACMP.DrawForm();
+	});
+  }
+},
+DoAct:function(act,HelpId,Params){
+  var self = this, e = self.element, op = self.options;
+  if (act=='08'){
+    
+  }
+  else{
+    self._super.apply(this,arguments);
+  }
+},
+Get_Data : function(HEvent, Params) {   
+  var self = this, e = self.element, op = self.options;
+  self._super.apply(self,arguments);
+  if (self.ActNo=='00'){
+	var fid = self.Aut?.aut?.f || self.Aut?.rp?.f;
+	self.$np("#AFZ5").text(fid+'-'+(op.FTitle||""));
+	var BtnRepShow='<div class="btn-group dropup" style="margin-bottom: 0.5px;margin-right: 10px;">'
+          +'<button type="button" class="btn btn-outline-info dropdown-toggle"  style="border-bottom-right-radius: 5px;border-top-right-radius: 5px;padding: 4px 2px;">'
+          +'<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>'
+	      
+          +'</button>'
+          +'<button type="button" id="ShowReport" class="btn btn-outline-info" style="border-top-left-radius: 5px;border-bottom-left-radius: 5px;">مشاهده گزارش</button>'
+          +'</div>';
+	$('Button:eq(0)',self.W_.$tbFooterAlignment).before(BtnRepShow);
+	$('button.dropdown-toggle',self.W_.$tbFooterAlignment).on("click",function(ee){
+      $(ee.currentTarget).npDropdown({
+        "list":[{"text" : "خروجي اكسل"}],
+        clickCallBack:function(elem){
+          self.Val('AFZ6','1');
+		  self.$np('#AFZD').click();
+	    },
+        ItemsStyle:'padding:8px',
+        ItemClass : "card"
+      })
+    });
+	$('#ExportExcel',self.W_.$dvfrmFooter).click(
+	  function(){
+		self.Val('AFZ6','1');
+		self.$np('#AFZD').click();
+	  });
+	$('#ShowReport',self.W_.$dvfrmFooter).click(
+	  function(){
+		self.Val('AFZ6','0');
+		self.$np('#AFZD').click();
+	  });
+	op.ShowBtn=function(){
+	  self.$np('#AFZD').click();
+	}
+
+	var CMP_Sort=self.GetCmpSelf('AFYy');
+	CMP_Sort.options.AfterReady=function(){
+	  var IsEmpty=true;
+	  if(!CMP_Sort.IsEmptyFilter){
+		self.$np('#AFZE').removeClass('d-none');
+		IsEmpty=false;
+	  }
+      var FiltersStruc=self.Val('AFPz');
+      self.Val('AFPz','');
+      self.V_.FiltersStruc=JSON.parse(FiltersStruc||'[]');	
+	  self.V_.FiltersStruc2={};
+	  var Items=[];
+	  var ReadyCnt=0;
+	  function afterReady(){
+		if(++ReadyCnt==self.V_.FiltersStruc.length){
+		  self.ResetClick(false);
+		};
+	  }
+      $.each(self.V_.FiltersStruc,function(i,v){
+        self.V_.FiltersStruc2[v.Seq]=v;
+	    var item={Seq:v.Seq,Number:1,orgid:('x_'+v.Seq+'_1'),Class:'col-lg-10 col-12 collapse show'};
+	    item.id=self.MakeFullId(item.orgid);
+		item.Expanded=ko.observable(true);
+		item.AfterReady0245=afterReady;
+        v.MaxFilter=v.Seq=='0'?1:10;
+		v.Numbers=1;
+        Items.push(item);
+		if(v.Layout)
+		  IsEmpty=false;
+      });
+	  if(IsEmpty){
+	    self.Val('AFZ7','1');
+		self.DoAct('C1');
+		return;
+      }
+	  
+	  self.GetDynaComponent(function(){
+	    self.FRM_ViewModel['_Items'+np.OPTOPT](Items);
+	  });
+	}
+	CMP_Sort.DoAct('08',null,{});	
+
+  }
+  else if (self.ActNo=='08'){
+  }
+},
+Reset:function(firsttime){
+  var self = this, e = self.element, op = self.options;
+  self._super.apply(self,arguments);
+  $.each(self.FRM_ViewModel._Items_OPT(),function(i,v){
+	var id=v.orgid;
+	self.GetCmpSelf(id).ResetClick()
+  });
+  if(!firsttime){
+
+  }
+},DoActClient:function(act,Params){
+   var self = this, e = self.element, op = self.options;
+   var p=Params;
+   var myEvent=Params.myEvent;
+   if(!self._super(act,Params)) return 0;var inxml,
+    outpar,
+    //Params,
+    FTYPE, FID, SUBFID, ACT, ACT00;
+
+if(act=='C1'){
+   inxml={outpar:{},doact:{}};
+   outpar={attr:function(i,v){inxml.outpar[i]=v;}};
+   ACT = null; ACT00=true;
+   Params=Params||{};
+   var TempParams={OpenInDialog:false,OpenInDialog_ShowModal:false,HideOpener:true,CloseOpener:false,DisableOpener:false,AfterClose:null,AfterOpen:null,ReturnParam:{},After:true,Width:'auto',Height:'auto',inxml:inxml };
+  TempParams.CmpId=110015;TempParams.AddrPath='/frm/BAS0237_CMP_ViewReport';TempParams.FName='BAS0237_CMP_ViewReport';TempParams.FTitle='مولفه مشاهده گزارش';TempParams.UseOpenerAut=true;  Params=$.extend(Params,$.extend(TempParams,Params));
+  inxml=Params.inxml;
+Params.UseOpenerCaption=true;
+Params.CustomParams={
+   HideButtons:op.HideButtonsInReport
+}
+if(op.ShowFooter)Params.ShowFooter=true;
+if(op.OpenerSelf && op.OpenerSelf.options.OpenInDialog||op.OpenInDialog)
+  Params.OpenInSameDialog = true;
+var DontOpenFilter=self.Val('AFZ7')=='1'?true:false;
+Params.AfterClose=function(){
+ if(DontOpenFilter)
+   setTimeout(function(){
+ self.Close();
+   },100);
+}
+ACT = '08';
+if (self.CheckValAct('08')==0)
+return;
+var vm_pub=$('Root',$.parseXML('<?xml version="1.0" encoding="utf-8"?><Root/>'));
+var vm_pri=$('Root',$.parseXML('<?xml version="1.0" encoding="utf-8"?><Root/>'));
+var fs=0;
+var Resp={}
+var firstFilterType=null;
+$.each(self.FRM_ViewModel['_Items'+np.OPTOPT](),function(itemOrder,item){
+  var id=item.orgid,vm_local;
+  var fltJson=self.GetCmpSelf(id)._ViewModel2XML('Cmp',{RootName:'Root',toJson:1});
+  var ft=self.V_.FiltersStruc2[item.Seq].FilterType;
+  if(item.Seq>0){
+    fs++;
+    vm_local=vm_pub;
+    firstFilterType=firstFilterType||ft; 
+  }
+  else{
+    vm_local=vm_pri;
+  }
+  $.each(fltJson,function(i,val){
+    if(i.indexOf('_')==-1) i=i+'_1';
+    var attrId=i.substring(5,i.indexOf('_'));
+    var xmlNode;
+    var temp=ft.toString()+'_'+fs.toString()+'_'+attrId;
+    if(!(xmlNode=Resp[temp])){
+      var bqas='';
+      if(ft==firstFilterType && fs==1){
+        bqas = ' B="" Q="" A="" S=""';
+      }
+      xmlNode=Resp[temp]=$('N',$.parseXML('<N id="'+attrId+'" ft="'+ft+'" fs="'+fs+'"'+bqas+'/>')).appendTo(vm_local);
+    }
+    if(i.indexOf('_xml')>-1) return;
+    if(i.indexOf('_FSEQ')>-1) return;
+	var temp2=''
+    if(i.indexOf('_M')!=-1){
+      temp2='M';
+      var RetVal='';
+      $('row',$(val)).each(function(i,v){
+        RetVal+=','+$(v).attr('val');   
+      });
+      val=RetVal.substr(1);
+    }
+    if(i.indexOf('_1')!=-1)
+      temp2='F'+(item.Seq>0?'1':'');
+    if(i.indexOf('_2')!=-1)
+      temp2='T'+(item.Seq>0?'1':'');
+	if(temp2)
+      xmlNode.attr(temp2,val);
+  });
+});
+var vm_sort=self.GetCmpSelf('AFYy')._ViewModel2XML('Cmp',{RootName:'Root'});
+var vm_sort_str="";
+(firstFilterType!=null)&&$.each(vm_sort,function(i,val){
+  if(i.indexOf('_')==-1) return;
+  var attrId=i.substring(5,i.indexOf('_'));
+  var xmlNode;
+  var temp=firstFilterType+'_1_'+attrId;
+  if(!(xmlNode=Resp[temp]))
+    xmlNode=Resp[temp]=$('N',$.parseXML('<N id="'+attrId+'" ft="'+firstFilterType+'" fs="1"/>')).appendTo(vm_pub);
+  if(i.indexOf('_B')!=-1)
+    temp='B';
+  if(i.indexOf('_Q')!=-1)
+    temp='Q';
+  if(i.indexOf('_A')!=-1)
+    temp='A';
+  if(i.indexOf('_S')!=-1)
+    temp='S';
+  xmlNode.attr(temp,val);
+  vm_sort_str+=' '+i+'="'+(val?val:'0')+'"';
+});
+
+
+vm_pub=vm_pub.parent().xml2();
+vm_pri=vm_pri.parent().xml2();
+
+
+outpar.attr('BMu',vm_pub);
+outpar.attr('BMv',vm_pri);
+outpar.attr('PUBFILTER',"1");
+var ClientFileName=self.Val("Arao");
+if (ClientFileName){
+  outpar.attr('Arap',ClientFileName);
+}
+/*start NPOpenFaciConnect*/
+inxml.outpar['CreateExce']=self.Val('AFZ6');
+
+/*end NPOpenFaciConnect*/
+
+  if (ACT)  inxml.doact.act=ACT;
+  if (!ACT00)  inxml.doact.act00='0';
+  self.OpenNewForm(FTYPE, FID, SUBFID, Params);}
+},
+	
+});
+
+})(jQuery,NowPardaz)
+//# sourceURL=BAS0203_CMP_REP_MultiFilter

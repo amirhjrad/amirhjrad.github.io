@@ -1,0 +1,2348 @@
+﻿(function($,np){
+$.widget("np.BAS0237_CMP_ViewReport", $.np.npform, {
+	options : {
+	    fname: 'BAS0237_CMP_ViewReport',
+	    ftitle:'مولفه مشاهده گزارش'
+	},
+	_create : function() {
+		var self=this,
+			op=self.options,
+			e=self.element;
+
+        
+op.AFlX_OnClk= function (myEvent,p) { 
+var Grd= self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+var w = $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')); 
+var MainTable = $("#"+self.MakeFullId("DIVTable3Prim>div>table"), w)
+var HideCols=[],
+	ShowCols=[];
+var CountColsHide=0;
+for(var i=0;i<self.ViewModel.ColGrid().length;i++){
+   if(!self.ViewModel.ColGrid()[i].check())
+		CountColsHide++;
+}
+if(CountColsHide == self.ViewModel.ColGrid().length)
+{
+ alert("حداقل يك ستون را انتخاب كنيد");
+ return;
+}
+var ww=0;
+for(var i=0;i<self.ViewModel.ColGrid().length;i++){
+  var w = parseInt(self.ViewModel.ColGrid()[i].width());
+  $.each(Grd._vm.ColsNoHide(),function(j,o){
+    if(o.Name==self.ViewModel.ColGrid()[i].Dat)
+      o.Width(w);
+  });
+   	
+  if(self.ViewModel.ColGrid()[i].check()){
+    ww+=w;
+    $("colgroup col:eq("+i+")",MainTable).attr("hide","0")
+    ShowCols.push(self.ViewModel.ColGrid()[i].Dat);
+    
+  }else{
+	  
+	  
+	  $("colgroup col:eq("+i+")",MainTable).attr("hide","1")
+	  HideCols.push(self.ViewModel.ColGrid()[i].Dat);
+	  
+	  
+   }
+}
+
+
+Grd.ShowColByName(ShowCols);
+Grd.HideColByName(HideCols);
+if(self.ViewModel.RadifShow()){
+  Grd._vm.Radif(1);
+  var w= parseInt(self.ViewModel.RadifWidth());
+  ww+=w;
+  Grd._vm.ColsNoHide()[0].Width(w);
+}else{
+  Grd._vm.Radif(0);
+}
+ww = ww + 'px';
+self.ViewModel.Table1_width(ww);
+self.ViewModel.Table2_width(ww);
+self.ViewModel.Table3_width(ww);
+self.SetPageSizeLabel();
+self.SettingBox.npDialog('close');};
+op.AFlY_OnClk= function (myEvent,p) { 
+self.SettingBox.npDialog('close');};
+op.AFng_OnClk= function (myEvent,p) { 
+var Grd= self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+
+var Sort=[];
+for(var i=0;i<self.ViewModel.ColGrid().length;i++){
+  if(self.ViewModel.ColGrid()[i].Sortcheck())
+     Sort.push({
+	     ColId:self.ViewModel.ColGrid()[i].col,
+	     Asc:(self.ViewModel.ColGrid()[i].SortTypeSelected()=="صعودي" ? true : false )
+	 })
+}
+Grd._vm.Sort(Sort);
+$(".bg-danger",self.$np("#AFhS")).parent("tr").removeClass("bg-danger text-light");
+self.SettingBox.npDialog('close');
+self.ViewModel.gofirst();};
+op.AFnh_OnClk= function (myEvent,p) { 
+self.ViewModel.ColGrid(self.V_.ColGridTemp)
+$(".bg-danger",self.$np("#AFhS")).removeClass("bg-danger text-light");
+self.SettingBox.npDialog('close');};
+op.AFsA_OnClk= function (myEvent,p) { 
+for(var i=0;i<$("stable2[idbreak=1]",self.RepVar.STable2).length;i++){
+  if(self.ViewModel.BreakGrid()[i].BreakCheck())
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idbreak",1);
+  else
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idbreak",0);
+  if(self.ViewModel.BreakGrid()[i].BreakTypeSelected()=="صعودي")
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idordersort","ascending");
+  else
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idordersort","descending");
+  if(self.ViewModel.BreakGrid()[i].ShowCheck())
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idshow","1");
+  else
+     $($("stable2[idlable=1]",self.RepVar.STable2)[i]).attr("idshow","0");
+  
+  
+}
+for(var j=0;j<self.ViewModel.BreakGrid().length;j++){
+  for(var k=0;k<$("stable2[idbreak=1]",self.RepVar.STable2).length;k++){
+     if(self.ViewModel.BreakGrid()[j].value.trim() == $($("stable2[idbreak=1]",self.RepVar.STable2)[k]).text().trim()){
+	   $(self.RepVar.STable2).append($("stable2[idbreak=1]",self.RepVar.STable2)[k])
+	   
+	 }
+  }
+}
+self.InitData();
+$(".bg-danger",self.$np("#AFhT")).parent("tr").removeClass("bg-danger text-light");
+self.SettingBox.npDialog('close');};
+op.AFs9_OnClk= function (myEvent,p) { 
+$(".bg-danger",self.$np("#AFhT")).removeClass("bg-danger text-light");
+self.SettingBox.npDialog('close');};
+op.AGAZ_OnClk= function (myEvent,p) { 
+var tr = $(".bg-danger",self.$np("#AFhS")).parent("tr");
+var index =tr.index();
+if(index==0)
+  return;
+var temp = self.ViewModel.ColGrid.splice(index,1)[0];
+self.ViewModel.ColGrid.splice(index-1,0,temp);
+self.ViewModel.SortTrClicked(self.ViewModel.SortTrClicked()-1);
+
+
+
+};
+op.AGAa_OnClk= function (myEvent,p) { 
+var tr = $(".bg-danger",self.$np("#AFhS")).parent("tr");
+var index =tr.index();
+if(index==self.ViewModel.ColGrid.length-1)
+  return;
+var temp = self.ViewModel.ColGrid.splice(index,1)[0];
+self.ViewModel.ColGrid.splice(index+1,0,temp);
+self.ViewModel.SortTrClicked(self.ViewModel.SortTrClicked()+1);
+
+
+
+};
+op.AGAc_OnClk= function (myEvent,p) { 
+var tr = $(".bg-danger",self.$np("#AFhT")).parent("tr");
+var index =tr.index();
+if(index==self.ViewModel.BreakGrid.length-1)
+  return;
+var temp = self.ViewModel.BreakGrid.splice(index,1)[0];
+self.ViewModel.BreakGrid.splice(index+1,0,temp);
+self.ViewModel.BreakTrClicked(self.ViewModel.BreakTrClicked()+1);
+
+
+
+
+};
+op.AGAb_OnClk= function (myEvent,p) { 
+var tr = $(".bg-danger",self.$np("#AFhT")).parent("tr");
+var index =tr.index();
+if(index==0)
+  return;
+var temp = self.ViewModel.BreakGrid.splice(index,1)[0];
+self.ViewModel.BreakGrid.splice(index-1,0,temp);
+
+self.ViewModel.BreakTrClicked(self.ViewModel.BreakTrClicked()-1);
+
+
+
+};
+
+        op.AfterLoad=function(){
+        
+            
+        
+        };
+		
+        this._super();
+		
+        
+        
+        //$(window).on('resize' + self.eventNamespace, $.proxy(self.ResizeHandler, self));
+		        
+        self.ResizeHandler();
+
+	},
+    ToExcel: function (Type) {
+  var self = this;
+  var w = window.open('', "_blank", 'height=300px, width=400px,menubar=yes,status=yes,toolbar=no,resizable =yes,location =no,titlebar =no,scrollbars =yes');
+  var XSLT2 = new XMLHttpRequest();
+  var XSLDoc2 = new XMLHttpRequest();
+  XSLDoc2.async = false;
+  XSLDoc2.open("GET", '/css/RepTableView/RepStrc_RowBase.XSLT', true);
+  XSLDoc2.send("");
+  var xslDoc;
+  var XMLStructure = self.XMLStrc[0].parentNode;
+  var XMLData = self.XMLDat.parent()[0].parentNode
+  XSLDoc2.onreadystatechange = function () {
+    if (this.readyState == 4) {
+      var xmlDoc = XMLStructure;
+      xslDoc = new DOMParser().parseFromString(XSLDoc2.response, "text/xml");
+      var xslProc2 = new XSLTProcessor();
+      xslProc2.importStylesheet(xslDoc);
+      var xslFragment = xslProc2.transformToFragment(xmlDoc, document);
+      var XMLGrid = new XMLHttpRequest(),
+        XMLGrid2 = new XMLHttpRequest(),
+        XMLGrid3 = new XMLHttpRequest();
+      var md0 = document.createElement('DIV');
+      md0.appendChild(xslFragment);
+      XMLGrid2 = new DOMParser().parseFromString(new XMLSerializer().serializeToString($("Root", md0)[0]), "text/xml");
+      XMLGrid3 = new DOMParser().parseFromString("<Root/>", "text/xml");
+      var ff = XMLGrid2.documentElement.childNodes[1] || XMLGrid2.documentElement.childNodes[0];
+      if (!ff) return;
+      for (var t = 0; t < XMLData.documentElement.childNodes.length; t++) {
+        var N = XMLGrid3.createElement("row");
+        for (var j = 0; j < ff.attributes.length; j++) {
+          var nam = ff.attributes[j].name;
+          try {
+            N.setAttribute(nam, XMLData.documentElement.childNodes[t].attributes.getNamedItem(nam).value)
+          }
+          catch (e) {
+            N.setAttribute(nam, '')
+          }
+        }
+        XMLGrid3.documentElement.appendChild(N);
+      }
+      var s = new XMLSerializer();
+      var d = XMLGrid3.documentElement;
+      XMLGrid3.xml = s.serializeToString(d);
+      XMLGrid = new DOMParser().parseFromString(XMLGrid3.xml, "text/xml");
+      if (XMLGrid2.documentElement.childNodes[1])
+        XMLGrid.documentElement.insertBefore(XMLGrid2.documentElement.childNodes[1], XMLGrid.documentElement.childNodes[0]);
+      else
+        XMLGrid.documentElement.insertBefore(XMLGrid2.documentElement.childNodes[0], XMLGrid.documentElement.childNodes[0]);
+      var TmpFile;
+      if (Type == "2")
+        var TmpFile = 'Csv.XSLT';
+      else
+        var TmpFile = '/css/RepTableView/HTMLTable.XSLT';
+      var XSLDoc = new XMLHttpRequest();
+      XSLDoc.open("GET", TmpFile, true);
+      XSLDoc.send("");
+      XSLDoc.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          var xmlDoc;
+          var xslDoc;
+          var xslTemplate;
+          var xslProcessor;
+          var xslFragment;
+          var s = new XMLSerializer();
+          var d = XMLGrid.documentElement;
+          XMLGrid.xml = s.serializeToString(d);
+          xmlDoc = new DOMParser().parseFromString(XMLGrid.xml, "text/xml");
+          xslDoc = new DOMParser().parseFromString(XSLDoc.response, "text/xml");
+          xslProcessor = new XSLTProcessor();
+          xslProcessor.importStylesheet(xslDoc);
+          xslFragment = xslProcessor.transformToFragment(xmlDoc, document);
+          if (!Type || Type == "0") {
+            
+            var md = document.createElement('DIV');
+            md.appendChild(xslFragment);
+            w.document.write(md.outerHTML);
+          }
+          else
+            fnReport(xslFragment, Type);
+        }
+      };
+    }
+  };
+},
+BeforeBinding: function () {
+      var self = this;
+      self.W_.$dvfrmFooter.hide();
+      self.FRM_ViewModel = self.ViewModel;
+      self.CreateObsArr('RepData');
+      self.CreateObsArr('RepHeader');
+      self.CreateObsArr('RepBtnList');
+      self.CreateObsArr('RepFooter');
+      self.CreateObsArr('RepSettingCols');
+      self.CreateObsArr('RepSortTab');
+      self.CreateObsArr('RepBreakChange');
+      self.CreateObsArr('Tr1Grid');
+      self.CreateObsArr('Tr2Grid');
+      self.CreateObsArr('ColGrid');
+      self.CreateObsArr('BreakGrid');
+
+      self.CreateObs('Table1_width');
+      self.CreateObs('Table2_width');
+      self.CreateObs('Table3_width');  
+      self.CreateObs('lengthOfB');
+      self.CreateObs('lengthOfL');
+      self.CreateObs('lengthOfS');
+      self.CreateObs('lengthOfC');
+      self.CreateObs('idBreakPage', '2');
+      self.CreateObs('HRecordInDisplay');
+      self.CreateObs('HRecordInPrint');
+      self.CreateObs('vmargintop', '0');
+      self.CreateObs('vmarginbottom', '0');
+
+      self.CreateObs('vmarginleft', '0');
+      self.CreateObs('vmarginright', '0');
+      self.CreateObs('radifNo');
+      self.CreateObs('recordInDisplay');
+      self.CreateObs('recordInPrint');
+      self.CreateObs('recordInPage');
+      self.CreateObs('idprintstyle');
+      self.CreateObs('idstyle');
+      self.CreateObs('idPage');
+      self.CreateObs('HasGrid', 1);
+      self.CreateObs('Table1_10_html');
+      self.CreateObs('Table1_8_html');
+      self.CreateObs('CurrPage', undefined, {num: true});
+      self.CreateObs('PageCount', undefined, {num: true});
+      self.CreateObs('TPage');
+      self.CreateObs('TPageShow', 1);
+
+
+      self.CreateObs('GrdPageCount', undefined, {num: true});
+      self.CreateObs('GrdCurrPage', undefined, {num: true});
+      self.CreateObs('Empty', "");
+      self.CreateObs('SortTrClicked', -1);
+      self.ViewModel.SortTrClick = function (index) {
+         self.ViewModel.SortTrClicked(index)
+      }
+      self.CreateObs('BreakTrClicked', -1);
+      self.ViewModel.BreakTrClick = function (index) {
+         self.ViewModel.BreakTrClicked(index)
+      }
+      self.CreateObs('_brpg_ORG');
+      self.CreateObs('_brtotpg_ORG');
+      self.CreateObs('_pg_ORG');
+      self.CreateObs('_totpg_ORG');
+      self.CreateObsArr('SettingColsWidth');
+      self.CreateObsArr('SettingColsCheckBox');
+      self.CreateObs('ShowAllColsInSetting', true);
+      self.CreateObs('RadifWidth');
+      self.CreateObs('RadifShow', true);
+      self.CreateObsArr('RepDataArray');
+      
+      self.ErrBox = self.$np('#RYX');
+      self.ErrBox.npDialog({
+         minWidth: 500,
+         autoOpen: false,
+         title: 'دلايل عدم نمايش',
+         appendTo: self.$np('#bod')
+      });
+      self.FRM_ViewModel['vm_GetTmplName'] = function ($data, bindingContext) {
+         var MyFather = bindingContext.$parent;
+         var MyRoot = bindingContext.$root;
+         if ($data.Typ) {
+            if ($data.Typ == 'Header')
+               return MyRoot.vm_FullId('BMx');
+
+            if ($data.Typ == 'Footer')
+               return MyRoot.vm_FullId('BMy');
+            if ($data.Typ == 'BtnList')
+               return MyRoot.vm_FullId('RZq');
+            if ($data.Typ == 'RepSettingCols')
+               return MyRoot.vm_FullId('AFlE');
+            if ($data.Typ == 'RepSortTab')
+               return MyRoot.vm_FullId('AFnd');
+            if ($data.Typ == 'RepBreakChange')
+               return MyRoot.vm_FullId('AFnj');
+
+         }
+         return MyRoot.vm_FullId('BMz');
+      }
+      self.FRM_ViewModel['vm_GetTmplNameOfGrid'] = function ($data, bindingContext) {
+         var MyFather = bindingContext.$parent;
+         var MyRoot = bindingContext.$root;
+         if (MyRoot.HasGrid())
+            return MyRoot.vm_FullId('BN0');
+         else
+            return MyRoot.vm_FullId('RY2');
+
+      }
+      self.FRM_ViewModel['vm_GetTmplNameOfNoGrid'] = function ($data, bindingContext) {
+         var MyFather = bindingContext.$parent;
+         var MyRoot = bindingContext.$root;
+         if (!MyRoot.HasGrid())
+            return MyRoot.vm_FullId('RY1');
+         else
+            return MyRoot.vm_FullId('RY2');
+      }
+      self.ViewModel.CurrPageInAll = ko.pureComputed({
+         read: function () {
+            if (!self.ViewModel.HasGrid())
+               return parseInt(self.ViewModel.CurrPage());
+            var C = 0;
+            ko.utils.arrayFilter(self.ViewModel.RepDataArray()[0], function (v, i) {
+               if (i < (parseInt(self.ViewModel.CurrPage()) - 1)) {
+                  C += parseInt((v.Grid.length / self.ViewModel.RepData()[0].GridInstance().options.LinePerPage))
+                  C = (v.Grid.length % self.ViewModel.RepData()[0].GridInstance().options.LinePerPage) ? C + 1 : C;
+               }
+            })
+            C += parseInt(self.ViewModel.GrdCurrPage());
+            return C || 1;
+         },
+         write: function (value) {
+            
+            
+         },
+         owner: self
+
+      }
+      );
+      
+
+      self.ViewModel.PageCountInAll = ko.computed(function () {
+         var GrdCurrPage = self.Val('GrdCurrPage');
+		 var xx= self.Val('GrdPageCount');
+         if (!self.ViewModel.HasGrid() && self.ViewModel.RepDataArray()[0])
+            return self.ViewModel.RepDataArray()[0].length;
+         var C = 0;
+         ko.utils.arrayFilter(self.ViewModel.RepDataArray()[0], function (v) {
+            C += parseInt((v.Grid.length / self.ViewModel.RepData()[0].GridInstance().options.LinePerPage))
+            C = (v.Grid.length % self.ViewModel.RepData()[0].GridInstance().options.LinePerPage) ? C + 1 : C;
+         });
+         return C;
+      }, self.ViewModel, { disposeWhenNodeIsRemoved: self.element });
+
+
+
+
+
+
+
+      self.SettingBox = self.$np('#BQF');
+      self.SettingBox.npDialog({
+         minWidth: 500,
+         autoOpen: false,
+         title: 'تنظيمات',
+         appendTo: self.$np('#bod')
+      });
+   },
+   DoAct: function (act, HelpId, Params) {
+      var self = this, e = self.element, op = self.options;
+      self.Val('BMs', '');
+      self.Val('BMt', '');
+      if (act == '01') {
+         if (document.URL.indexOf("orkide.nowpardaz.local") > -1) {
+            self.Message({
+               text: 'نمايش اين قسمت به روش جديد انجام شود؟',
+               type: 'confirm',
+               AfterSelect: function (ev, answer) {
+                  if (answer.yes) {
+                     self.Val("AAg0", JSON.stringify(self._SndXML));
+                     self.$np("#AAfz").submit();
+                  }
+                  else {
+                     self.IframeLoadCount = 0;
+                     self.OpenWindow(true);
+                  }
+               }
+            })
+         } else {
+            self.IframeLoadCount = 0;
+            self.OpenWindow(true);
+         }
+         self._Init_SndXML({});
+         if (!self._ViewModel2XML('08'))
+            return
+
+      }
+      else if (act == '03') {
+         
+         if (self.Val("RXD") == "0") {
+            $("ul li:eq(1)", self.$np("#AFhP")).addClass("disabled").css("cursor", "not-allowed");
+            $("ul li:eq(2)", self.$np("#AFhP")).addClass("disabled").css("cursor", "not-allowed");
+
+         } else if (self.Val("RXD") == "2") {
+            $("ul li:eq(2)", self.$np("#AFhP")).addClass("disabled").css("cursor", "not-allowed");
+
+         }
+         self.Settings();
+      }
+      else if (act == '09') {
+         self.Val("BMu", self.V_.vm_pub);
+         self.Val("BMv", self.V_.vm_pri);
+         self.V_.RunAct08Again = 1;
+         self.DoAct('08');
+      }
+      else if (act == '04') {
+         self.Val("RX8", "1");
+         self.Val("BMu", self.V_.vm_pub);
+         self.Val("BMv", self.V_.vm_pri);
+         self.DoAct('08');
+      }
+      else if (act == '02') {
+         
+         
+         
+         
+         self.GoToFilter = 1;
+         self.Close();
+      }
+      else {
+         self._super.apply(self, arguments);
+      }
+   },
+   ErrorsReasons: function () {
+      var self = this;
+      var Table = $("<table style='width:100%' border='1'></table>"),
+         Tr = "",
+         Div = "";
+      $(self.XMLDat).each(function (i, v) {
+         if (i == 0) {
+            Div = "<div>" + $(v).attr('C2') + "</div><br>";
+         } else if (i == 1) {
+            Tr += "<tr style='background-color:#ccc'><td>" + $(v).attr('C1') + "</td><td>" + $(v).attr('C2') + "</td></tr>";
+         }
+         else {
+            Tr += "<tr><td>" + $(v).attr('C1') + "</td><td>" + $(v).attr('C2') + "</td></tr>";
+         }
+      });
+      self.ErrBox.html("");
+      self.ErrBox.append(Div);
+      $(Table).append(Tr);
+      self.ErrBox.append(Table);
+      self.ErrBox.npDialog('open');
+   },
+   Settings: function () {
+      var self = this;
+      self.SettingBox.npDialog('open');
+      self.Val('BQG', self.Val('BQU'));
+      self.Val('BQH', self.Val('BQV'));
+      self.Val('BQI', self.Val('BQe'));
+      self.Val('BQJ', self.Val('vmargintop'));
+      self.Val('BQK', self.Val('vmarginbottom'));
+      self.Val('BQL', self.Val('vmarginright'));
+      self.Val('BQM', self.Val('vmarginleft'));
+      self.Val('BQf', self.Val('recordInDisplay'));
+      self.Val('BQP', self.Val('recordInPrint'));
+      self.Val('BQR', self.Val('HRecordInPrint'));
+      self.Val('BQQ', self.Val('HRecordInDisplay'));
+   },
+   OpenWindow: function (CreateIframe, callbackGetHtml) {
+      var self = this;	
+
+      if (CreateIframe) {
+         self.Ifrm = $("<iframe  style='width:100%;height:100%;visibility:hidden'></iframe>")
+         self.$np('#dvfrmCenter').parent().append($(self.Ifrm))
+
+      }
+      var IfrmBod = $(self.Ifrm).contents().find('body');
+      setTimeout(function () {
+         $(self.Ifrm).contents().find('head')
+		   .append("<style>body{direction:rtl}.np-page-break-after{page-break-after:always}th{font-weight:normal}td{box-sizing:border-box;}"+
+				   "</style><link rel='stylesheet' type='text/css' href='/css/rep/" + self.Val("idprintstyle") + ".css' />");
+      }, 0)
+      if ($(self.Ifrm).contents().find('body').html() == undefined) {
+         setTimeout(function () {
+            self.OpenWindow(false, callbackGetHtml);
+         }, 1000);
+      }
+      else {
+         $(self.Ifrm).contents().find('body').append('<div class="CRepDate"></div>')
+         setTimeout(() => {
+            
+            
+            
+		    
+            const fontFile = new FontFace(
+              'Golestan Koodak',
+              "url('/_fonts/Golestan Koodak.ttf')"
+            );
+            const fontFile2 = new FontFace(
+              'Golestan Nazanin',
+              "url('/_fonts/Golestan Nazanin.ttf')"
+            );
+            const fontFile3 = new FontFace(
+              'Golestan System',
+              "url('/_fonts/Golestan System.ttf')"
+            );		   
+            self.Ifrm[0].contentWindow.document.fonts.add(fontFile);
+            self.Ifrm[0].contentWindow.document.fonts.add(fontFile2);
+            self.Ifrm[0].contentWindow.document.fonts.add(fontFile3);
+            
+			
+		    Promise.all([
+			  fontFile.load().finally(() => { console.log('1'); }),
+			  fontFile2.load().finally(() => { console.log('2'); }),
+			  fontFile3.load().finally(() => { console.log('3'); })
+			]).finally(() => {
+			  console.log('all');
+			  if (callbackGetHtml) {
+			     setTimeout(() => {
+				   callbackGetHtml(self.PrintPreview(callbackGetHtml));
+				 },100) 	
+			  }
+			  else{
+                 setTimeout(() => self.PrintPreview(),100)
+			  }
+			});
+         }, 1000);
+      }
+   },
+   ToggleDivs(show) {
+      var self = this;
+      if (!show) {
+         var lastDiv = $("div.np-page-break-after:not(:empty):last", $(self.Ifrm).contents().find('body'));
+         if (!$("#" + self.MakeFullId("divBT5"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT5"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBFPT5"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT5"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBT6"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT6"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBFPT6"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT6"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBT7"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT7"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBFPT7"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT7"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBT8"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT8"), lastDiv).hide();
+         if (!$("#" + self.MakeFullId("divBFPT8"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT8"), lastDiv).hide();
+      } else {
+
+         var lastDiv = $("div.np-page-break-after:not(:empty):last", $(self.Ifrm).contents().find('body'));
+         if (!$("#" + self.MakeFullId("divBT5"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT5"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBFPT5"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT5"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBT6"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT6"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBFPT6"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT6"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBT7"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT7"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBFPT7"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT7"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBT8"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBT8"), lastDiv).show();
+         if (!$("#" + self.MakeFullId("divBFPT8"), lastDiv).is(":empty"))
+            $("#" + self.MakeFullId("divBFPT8"), lastDiv).show();
+      }
+   },
+   PrintPreview: function (callbackGetHtml) {
+      var self = this;
+      var MaxHeight = self.V_.PgMaxHeight-5;
+      var RepDataChild = self.$np("#RepDataParent").children('div').length;
+      var CurrPage = self.Val('CurrPage');
+      var AllPage = 0;
+      var lastpageCount = 0;	  
+      var myWindow;
+  	  var ret='';
+	  if (!callbackGetHtml) {
+		myWindow = window.open("", "_blank", "width=800, height=600,scrollbars=yes");
+        if (!myWindow) {
+          alert("امكان باز كردن صفحه جديد وجود ندارد - لطفا تنظيمات مرورگر خود را بررسي نماييد.");
+          return;
+        }
+	  } else {
+		myWindow = {
+		  document: {
+			write: (inp) => {
+			  ret+=inp;
+			}
+		  }
+		}
+	  }
+	 
+      if (self.Val('f4o') == '0')
+         myWindow.document.write('<!DOCTYPE html><html dir="ltr">');
+      else
+         myWindow.document.write('<!DOCTYPE HTML PUBLIC "-\/\/W3C\/\/DTD HTML 4.0 Transitional\/\/EN"><html dir="ltr">');
+
+
+
+      myWindow.document.write("<head>");
+      myWindow.document.write("<link rel='stylesheet' type='text/css' href='/css/rep/Fonts.css' />");
+	  myWindow.document.write("<link rel='stylesheet' type='text/css' href='/css/rep/" + self.Val("idprintstyle") + ".css' />"); 
+      myWindow.document.write("<link rel='stylesheet' type='text/css' href='/css/rep/print.css' />");
+      myWindow.document.write("<style>");
+      myWindow.document.write("@media print {div.chap{display:none}} button.chap{ font-family:tahoma; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px; margin: 20px; position: absolute; } div.chap{width:100%;text-align:right;}");
+
+      
+      myWindow.document.write("</style>");
+       myWindow.document.write("<script>");
+       myWindow.document.write(`
+         
+         var loadedImgCnt = 0;
+         var allImageCnt = 0;
+         window.addEventListener('error',(ev)=>{
+                if (ev.target.tagName === "IMG") {
+                    var ss=ev.target.src;
+                    if (ss && ss.indexOf('data:image/')==-1){                
+                      ss=ss.replace(/&random=\\d+/,'')+'&random='+(Math.random()*1000000000).toFixed()
+                      setTimeout(()=> ev.target.src=ss, (Math.random()*1000+100).toFixed());
+                    }
+                }
+         },true);
+         document.addEventListener('load',(ev)=>{
+                if (ev.target.tagName === "IMG") {
+                    loadedImgCnt++;
+                    if (loadedImgCnt==allImageCnt) {
+                        document.querySelector('button.chap').innerHTML = 'چاپ Ctrl+P';
+                    } else {
+                        document.querySelector('button.chap').innerHTML = loadedImgCnt+'/'+allImageCnt + '<br> چاپ Ctrl+P';
+                    }
+                }
+         },true);
+       `);
+       myWindow.document.write("</script>");
+      myWindow.document.write("</head>");
+      var TrHeight = self.Val('HRecordInPrint') || "18";
+
+      myWindow.document.write("<body dir='rtl' style='margin-top:" + (self.Val('vmargintop') != "0" ? self.Val('vmargintop') : "") + "cm;margin-right:" + (self.Val('vmarginright') != "0" ? self.Val('vmarginright') : "") + "cm;margin-left:" + (self.Val('vmarginleft') != "0" ? self.Val('vmarginleft') : "") + "cm;margin-bottom:" + (self.Val('vmarginbottom') != "0" ? self.Val('vmarginbottom') : "") + "cm'/>");
+      myWindow.document.write('<div class="chap"><button class="chap" onclick="window.print()">چاپ Ctrl+P</button></div>');
+
+      self.Val('CurrPage', 1);
+      var PageCount = parseInt(self.Val('PageCount'));
+      var w = $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')).clone();
+	  var orgMainTable = $("#" + self.MakeFullId("DIVTable3Prim>div>table"), $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')));
+      var MainTable = $("#" + self.MakeFullId("DIVTable3Prim>div>table"), w);
+	  var hasRadif = (self.ViewModel.RadifShow() )?1:0;
+      if (hasRadif)
+		$(MainTable).children('colgroup').prepend("<col width='" + self.Val('RadifWidth') + "'></col>");
+         
+
+      var CountinueLoop = true, pg = 0;
+      self.V_.x = true;
+      var CurrentPage,
+         PagesOfBreak = [];
+      for (var i = 0; i < PageCount; i++) {
+         CurrentPage = 0;
+         PagesOfBreak = [];
+         pg = 0;
+         var lengthOfrecord = 0;
+         while (CountinueLoop && lengthOfrecord < self.Val("recordInPage")) {
+            
+            
+            
+            
+            
+            var w = $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')).clone();
+            var Header = $("#" + self.MakeFullId("Table1"), self.$np('#dvfrmCenter')).parent('div').clone();
+            if (self.ViewModel.idPage() != "4" && self.ViewModel.idPage() != "5") {
+               
+               if (self.ViewModel.idPage() == "3")
+                  $("#" + self.MakeFullId("Table1_10"), Header).attr('align', 'left').html('صفحه: <span class="PageNumbersNesbi" style="display:none">  <span class="firstpage" >' + self.npFormat("1") + '</span> از  <span class="lastpage" >1+</span> </span><span class="PageNumbersMotlagh" style="display:none">(<span class="firstpage" >' + self.npFormat("1") + '</span> از <span class="lastpage" >1+</span> ) </span>');
+               else
+                  $("#" + self.MakeFullId("Table1_10"), Header).attr('align', 'left').html(' <span class="PageNumbersNesbi" style="display:none"> صفحه: <span class="firstpage" >' + self.npFormat("1") + '</span> از  <span class="lastpage" >1+</span> </span><span class="PageNumbersMotlagh" style="display:none">صفحه: <span class="firstpage" >' + self.npFormat("1") + '</span> از <span class="lastpage" >1+</span></span>');
+
+            }
+            var DivIso = $("#" + self.MakeFullId("divISOcont"), self.$np('#dvfrmCenter'));
+            DivIso = $("<div/>").append(DivIso.clone());
+            Header = '<div >' + Header.html() + DivIso.html() + '</div>';
+            var Footer = $("#" + self.MakeFullId("DIVRem"), self.$np('#dvfrmCenter')).parent('div');
+            Footer = '<div >' + Footer.html() + '</div>';
+            var FHOriginal = $("#" + self.MakeFullId("Table1"), self.$np('#dvfrmCenter')).parent('div').height() + $("#" + self.MakeFullId("DIVRem"), self.$np('#dvfrmCenter')).parent('div').height();
+            if (self.ViewModel.HasGrid()) {
+               MainTable = MainTable.css("width", self.Val("Table3_width")).show();
+               if (hasRadif) {
+                  if (i != 0)
+                     $("colgroup", MainTable).prepend("<col width=" + self.Val("RadifWidth") + "></col>")
+                  $("thead>tr:eq(1)", MainTable).prepend("<th valign='bottom' align='center' style='border-top:0px;border-r_ight:0px;border-left:0px'>رديف</th>");
+                  $("thead>tr:eq(0)", MainTable).prepend("<th style='bor_der:0px;border-bottom:0px'></th>");
+               }
+            } else {
+               $("#" + self.MakeFullId("DIVTable3>div"), w).remove();
+               MainTable = $("#" + self.MakeFullId("DIVTable3>table"), w).show();
+            }
+            var MainTableNextPage;
+            MainTable.append('<tbody class="CTable3"></tbody>');
+            var MainTableTemp = MainTable.clone();
+            var BLP_Present = true;
+            $(self.Ifrm).contents().find('body').append('<div class="np-page-break-after" align="center"/>');
+            PagesOfBreak[pg] = $('div:last', $(self.Ifrm).contents().find('body'));
+            PagesOfBreak[pg].append(Header);
+            $('span.PageNumbersNesbi>span.firstpage', PagesOfBreak[pg]).removeClass('firstpage')
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT1"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT1"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("DIVVarRem_1"), w));
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT2"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT2"), w))
+
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divTable2"), w))
+
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT3"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT3"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("DIVVarRem_2"), w));
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT4"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT4"), w))
+
+
+            CountinueLoop = false;
+            PagesOfBreak[pg].append($('<div id="' + self.MakeFullId("DIVTable3") + '"></div>'));
+            PagesOfBreak[pg].append($('<div id="' + self.MakeFullId("DIVTable3Prim") + '"></div>'));
+            lastpageCount++;
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT5"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT5"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("Table5"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT6"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT6"), w));
+
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("DIVVarRem"), w));
+
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT7"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT7"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBT8"), w))
+            PagesOfBreak[pg].append($("#" + self.MakeFullId("divBFPT8"), w))
+
+
+            PagesOfBreak[pg].append(Footer);
+            self.ToggleDivs(0);
+            if (!self.ViewModel.HasGrid()) {
+               $("#" + self.MakeFullId("DIVTable3"), PagesOfBreak[pg]).append($('<table class="CTable3" style="border-collapse: collapse; table-layout: fixed; width: ' + self.Val("Table3_width") + ';" border="0" cellpadding="1" cellspacing="0"></table>'));
+               var length1 = $('#' + self.MakeFullId("DIVTable3") + '>table>tbody>tr', w).length;
+
+               self.CurrentTr = self.CurrentTr || 0;
+               for (var j = self.CurrentTr; j < length1; j++) {
+                  var pbheight = PagesOfBreak[pg].height();
+                  console.log(pbheight, MaxHeight);
+                  if (pbheight < MaxHeight) {
+                     $('#' + self.MakeFullId("DIVTable3") + '>table', PagesOfBreak[pg]).append("<tr class='CTRData'><td class='CTDData'>" 
+																							   
+																							   + $('.CTDData:eq('+j+')',w).html()
+																							   + "</td></tr>"); 
+                     if (PagesOfBreak[pg].height() > MaxHeight && length1 > 1 && $('#' + self.MakeFullId("DIVTable3") + '>table>tr.CTRData', PagesOfBreak[pg]).length > 1) { 
+                        $('#' + self.MakeFullId("DIVTable3") + '>table>tr.CTRData:last', PagesOfBreak[pg]).remove(); 
+                        CountinueLoop = true;
+
+
+                        break;
+                     } else { 
+                        self.CurrentTr++;
+
+                     }
+                  } else {
+                     if (self.CurrentTr) { 
+                        
+                        
+                        CountinueLoop = true; 
+                     }
+
+                     break;
+                  }
+                  
+
+               }
+               if (!CountinueLoop)
+                  self.ToggleDivs(1);
+            } else {
+               $('#' + self.MakeFullId("DIVTable3Prim"), PagesOfBreak[pg]).append(MainTable);
+            }
+            if (!self.ViewModel.HasGrid()) {
+               PagesOfBreak[pg].html(np.ManageNpCustom(PagesOfBreak[pg].html(), null, self.element))
+               $('span.PageNumbersNesbi>span:first', PagesOfBreak[pg]).text(self.npFormat(pg + 1 + "")).removeClass('firstpage');
+            }
+            var PageNum = 1, RowNum = 0, 
+				ColNo = $('col', MainTable.children('colgroup')).length, 
+				tr = '';
+            if (hasRadif)
+               ColNo = ColNo - 1;
+            var Counter = 0;
+            self.ViewModel.HasGrid() && $($("#" + self.MakeFullId("DIVTable3Prim>div>table"), $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter'))).npgrid("instance")._vm.TrSortedOfTBody()).each(function (j, o) {
+               var $o = $(o), td = '';
+               Counter++;
+               if (hasRadif) {
+                  var k = j + 1;
+                  td += '<td style="vertical-align:top">' + k + '</td>';
+
+               }
+               if ($("thead", MainTable).text().trim() == ""){
+                  $("thead", MainTable).remove();
+                  $("thead", MainTableTemp).remove();
+			   }
+			   var tr1colspanDelta=0;
+			   var tr1colspanSum=0;
+               for (cnt = 0; cnt < ColNo; cnt++) {
+                  if($("colgroup col:eq(" + (cnt+hasRadif) + ")", MainTable).attr("hide") == "1") { 
+                     $("thead tr:first th:eq(" + (cnt+hasRadif-tr1colspanSum) + ")", MainTable).attr("hide", "1"); 
+                     $("colgroup col:eq(" + (cnt+hasRadif) + ")", MainTable).attr("hide", "1"); 
+                     $("thead tr:first th:eq(" + (cnt+hasRadif-tr1colspanSum) + ")", MainTableTemp).attr("hide", "1"); 
+                     $("colgroup col:eq(" + (cnt+hasRadif) + ")", MainTableTemp).attr("hide", "1"); 
+                  } else if (tr1colspanDelta==0 && parseInt($("thead tr:first th:eq(" + (cnt+hasRadif-tr1colspanSum) + ")", MainTable).attr("colspan"))>1) {
+					var colspanLocal = parseInt($("thead tr:first th:eq(" + (cnt+hasRadif-tr1colspanSum) + ")", MainTable).attr("colspan"));
+					tr1colspanDelta+=colspanLocal-1;
+					tr1colspanSum+=colspanLocal-1;
+				  } else if (tr1colspanDelta>0) {
+					tr1colspanDelta--;
+				  }
+							 
+				  if($("colgroup col:eq(" + (cnt) + ")", orgMainTable).attr("hide") != "1") { 
+                     var Html = (self.V_.HideCols && self.V_.HideCols.indexOf(o.Td()[cnt].id) > -1) ? "" : o.Td()[cnt].Html();
+                     var count = cnt + 1;
+                     var align = self.ViewModel.ColAttr["ALIGN" + count];
+                     var dir = self.ViewModel.ColAttr["DIR" + count];
+                     if (self.ViewModel.ColAttr["MULTILINE" + count] == "0")
+                        td += '<td  style="overflow:hidden;text-overflow:ellipsis;vertical-align:top;white-space:nowrap" class="CTDData" dir="' + dir + '" align="' + align + '">' + self.npFormat($('<a/>').html(Html).html()) + '</td>';
+                     else
+                        td += '<td dir="' + dir + '" align="' + align + '" class="CTDData" style="overflow:hidden;vertical-align:top">' + self.npFormat($('<a/>').html(Html).html()) + '</td>';
+                  }
+               }
+               $("thead tr:first th[hide=1]", MainTable).remove();
+               $("colgroup col[hide=1]", MainTable).remove();
+               $("thead tr:first th[hide=1]", MainTableTemp).remove();
+               $("colgroup col[hide=1]", MainTableTemp).remove();
+               tr = '<tr style="height:' + TrHeight + 'px" class="CTRData">' + td + '</tr>';
+               MainTable.append(tr);
+               RowNum++;
+			   console.log(PagesOfBreak[CurrentPage].outerHeight(true),$(tr).height(), MaxHeight, BLP_Present);
+               if (((PagesOfBreak[CurrentPage].outerHeight(true) + $(tr).height() >= MaxHeight) && BLP_Present) || parseInt(self.Val('recordInPrint')) < RowNum) {
+                  BLP_Present = false;
+                  $(self.Ifrm).contents().find('body').append('<div class="np-page-break-after" align="center"/>');
+                  PagesOfBreak[CurrentPage + 1] = $('div:last', $(self.Ifrm).contents().find('body'));
+                  PagesOfBreak[CurrentPage + 1].append(Header);
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT1"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("DIVVarRem_1"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT2"), $(self.Ifrm).contents().find('body')).clone());
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divTable2"), $(self.Ifrm).contents().find('body')).clone());
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT3"), $(self.Ifrm).contents().find('body')).clone())
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("DIVVarRem_2"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT4"), $(self.Ifrm).contents().find('body')).clone())
+
+                  MainTableNextPage = MainTableTemp.clone();
+                  var DIVTable3Prim = $('<div id="DIVTable3Prim" ></div>');
+                  $(DIVTable3Prim).append(MainTableNextPage);
+                  PagesOfBreak[CurrentPage + 1].append(DIVTable3Prim);
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT5"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("Table5"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT6"), $(self.Ifrm).contents().find('body')).clone());
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("DIVVarRem"), $(self.Ifrm).contents().find('body')).clone());
+
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT7"), $(self.Ifrm).contents().find('body')).clone());
+                  PagesOfBreak[CurrentPage + 1].append($("#" + self.MakeFullId("divBT8"), $(self.Ifrm).contents().find('body')).clone());
+
+                  PagesOfBreak[CurrentPage + 1].append(Footer);
+
+                  PageNum++;
+                  $('span.PageNumbersNesbi>span.firstpage', PagesOfBreak[CurrentPage + 1]).text(self.npFormat(PageNum + "")).removeClass('firstpage');
+
+                  AllPage++;
+
+               }
+               if ((RowNum>1) && (PagesOfBreak[CurrentPage].outerHeight(true) + $(tr).height() > MaxHeight || parseInt(self.Val('recordInPrint')) < RowNum)) {
+                  RowNum = 1;
+                  MainTableNextPage.append($(MainTable).find('tbody>tr.CTRData:last-child'));
+                  myWindow.document.write(PagesOfBreak[CurrentPage].OuterHTML());
+                  MainTable = MainTableNextPage;
+                  BLP_Present = true;
+                  CurrentPage++;
+                  myWindow.document.title = 'لطفا صبر كنيد ... تعداد صفحات آماده چاپ: ' + PageNum + '';
+               }
+            });
+            if (!CountinueLoop)
+               self.ToggleDivs(1);
+            var l = PagesOfBreak.length - 1;
+            if (self.ViewModel.HasGrid()) {
+               myWindow.document.write(PagesOfBreak[CurrentPage].OuterHTML());
+               $(self.Ifrm).contents().find('body').html('');
+            }
+            $('[data-bind]', $(self.Ifrm).contents().find('body').children()).removeAttr('data-bind');
+            PageNum = !self.ViewModel.HasGrid() ? pg + 1 : PageNum;
+            AllPage++;
+            if (self.ViewModel.idPage() == "1" || self.ViewModel.idPage() == "3") {
+               if (self.ViewModel.HasGrid()) {
+                  $('.PageNumbersNesbi', myWindow.document).show();
+                  $('span.PageNumbersNesbi>span.lastpage', myWindow.document).text(self.npFormat(PagesOfBreak.length + "")).removeClass("lastpage");
+               } else {
+                  $('.PageNumbersNesbi', $(self.Ifrm).contents().find('body')).show();
+                  $('span.PageNumbersNesbi>span.lastpage', $(self.Ifrm).contents().find('body')).text(self.npFormat(PagesOfBreak.length + ""));
+               }
+            } else if (self.V_.PageInSpFirst) {
+               $("#" + self.V_.PageInSpFirst, PagesOfBreak[PagesOfBreak.length - 1]).text(self.npFormat(PagesOfBreak.length + ""));
+            }
+            myWindow.document.title = 'لطفا صبر كنيد ... تعداد صفحات آماده چاپ: ' + AllPage + '';
+            if (!self.ViewModel.HasGrid()) {
+               
+            }
+            if (CountinueLoop) {
+               $(self.Ifrm).contents().find('body').append('<div class="np-page-break-after"/>');
+            }
+            $(self.Ifrm).contents().find('body').append('<div class="np-page-break-after"/>');
+            pg++;
+            lengthOfrecord++;
+         }
+
+
+
+
+         if (!self.ViewModel.HasGrid()) {
+            for (var m = 0; m < PagesOfBreak.length; m++) {
+               $('span.PageNumbersNesbi>span.lastpage', PagesOfBreak[m]).text(self.npFormat(lastpageCount + ""));
+               if (!self.ViewModel.HasGrid()) {
+                  myWindow.document.write(PagesOfBreak[m].OuterHTML());
+               }
+            }
+         }
+         lastpageCount = 0
+         CountinueLoop = true;
+         self.Val('CurrPage', (i == PageCount - 1) ? i + 1 : i + 2)
+         self.CurrentTr = 0;
+         w = $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')).clone();
+         MainTable = $("#" + self.MakeFullId("DIVTable3Prim>div>table"), w);
+
+
+      }
+
+      if (self.ViewModel.idPage() == "2" || self.ViewModel.idPage() == "3") {
+         $('.PageNumbersMotlagh', myWindow.document).show();
+         $('span.PageNumbersMotlagh>span.firstpage', myWindow.document).each(function (i, v) {
+
+            $(v).text(self.npFormat(i + 1 + "")).removeClass('firstpage')
+         })
+         $('span.PageNumbersMotlagh>span.lastpage', myWindow.document).text(self.npFormat(AllPage + ""));
+
+      } else if (self.V_.PageInSpLast) {
+         $(".np-page-break-after  #" + self.V_.PageInSpLast + "", myWindow.document).text(self.npFormat(AllPage + ""));
+      }
+       myWindow.document.write("<script>");
+       myWindow.document.write(`
+         allImageCnt = document.querySelectorAll("img").length;
+       `);
+       myWindow.document.write("</script>");
+      myWindow.document.title = 'كليه ي صفحات (' + AllPage + 'صفحه)آماده شد . حالا ميتوانيد گزارش را چاپ كنيد';
+	 
+      myWindow.document.write("</body>");
+      myWindow.document.write("</html>");
+      $(self.Ifrm).remove();
+      self.ViewModel.gofirst();
+      try {
+         var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+         setTimeout(function () {
+            if (isFirefox) { 
+               myWindow.stop();
+            }
+         }, 5000)
+      } catch (e) {
+
+      }
+	  return ret;
+   },
+   DefineXML: function () {
+      var self = this,
+         ColAttr = {},
+         Sallbody = self.RepVar.Sallbody = $('Sallbody', self.XMLStrc),
+         STable1 = self.RepVar.STable1 = $('STable1:eq(0)', self.XMLStrc),
+         STable2 = self.RepVar.STable2 = $('STable2:eq(0)', self.XMLStrc),
+         STable3 = self.RepVar.STable3 = $('STable3:eq(0)', self.XMLStrc),
+         SRemark = self.RepVar.SRemark = $('SRemark:eq(0)', self.XMLStrc);
+      self.V_.HideCols = [];
+      self.XAttrToViewModel('Table1_width', STable1, 'idwidth');
+      self.XAttrToViewModel('Table2_width', STable2, 'idwidth');
+      self.XAttrToViewModel('Table3_width', STable3, 'idwidth');
+      
+      
+      self.XAttrToViewModel('Radif', STable3, 'idradif');
+      self.XAttrToViewModel('Radif_width', STable3, 'idradifwidth');
+      self.XAttrToViewModel('Radif_align', STable3, 'idradifalign');
+      ColAttr['Radif'] = parseInt(self.Val('Radif'));
+      ColAttr['RadifWidth'] = ColAttr['Radif'] ? self.Val('Radif_width') : 0;
+      ColAttr['ALIGNR'] = self.Val('Radif_align');
+      self.ViewModel.RadifWidth(ColAttr['RadifWidth']);
+      self.ViewModel.RadifShow(ColAttr['Radif'] ? true : false)
+      self.XAttrToViewModel('iso', STable1, 'iso');
+      self.XAttrToViewModel('DIVRem', SRemark, '$html');
+      self.Val('iso', self.npFormat(self.Val('iso')));
+      self.Val('DIVRem', self.npFormat(self.Val('DIVRem')));
+
+      self.Val('lengthOfB', self.RepVar.lengthOfB = $('[idlable="1"]', STable2).length);
+      self.Val('lengthOfL', self.RepVar.lengthOfL = $('[idlable="2"]', STable2).length);
+      self.Val('lengthOfS', self.RepVar.lengthOfS = $('[idlable="3"]', STable2).length);
+      self.Val('lengthOfC', self.RepVar.lengthOfC = $('[idlable="4"]', STable2).length);
+
+      self.XAttrToViewModel('idPage', Sallbody, 'idpage');
+	  self.Val('BQU', self.ViewModel.idPage())
+      self.XAttrToViewModel('idBreakPage', Sallbody, 'idbreakpage', 2);
+      self.XAttrToViewModel('HRecordInDisplay', Sallbody, 'idheight');
+      self.XAttrToViewModel('HRecordInPrint', Sallbody, 'idheightprint');
+      self.XAttrToViewModel('vmargintop', Sallbody, 'idmart', 0);
+      self.XAttrToViewModel('vmarginbottom', Sallbody, 'idmarb', 0);
+      self.XAttrToViewModel('vmarginleft', Sallbody, 'idmarl', 0);
+      self.XAttrToViewModel('vmarginright', Sallbody, 'idmarr', 0);
+      self.XAttrToViewModel('radifNo', Sallbody, 'idradif');
+      self.XAttrToViewModel('recordInDisplay', Sallbody, 'idrecord');
+      self.XAttrToViewModel('recordInPrint', Sallbody, 'idrecordprint');
+      self.XAttrToViewModel('recordInPage', Sallbody, 'idrecord');
+      self.XAttrToViewModel('idprintstyle', Sallbody, 'idprintstyle');
+      self.XAttrToViewModel('idstyle', Sallbody, 'idstyle');
+      self.ViewModel['TableX'] = function (X, $data, bindingContext, Col) {
+         var MyFather = bindingContext.$parent;
+         var MyRoot = bindingContext.$root;
+         var that = $data;
+         var TblX = (X == 2) ? that.Table2() : (X == 5 ? that.Table5() : null);
+         if (!TblX)
+            return ([]);
+         var OptLen = TblX.length;
+         
+         if ((OptLen % 2) == 0) {
+            return Col == 1 ? TblX.slice(0, (OptLen / 2)) : TblX.slice((OptLen / 2), OptLen);
+         }
+         else {
+            return Col == 1 ? TblX.slice(0, (OptLen / 2) + 0.5) : TblX.slice((OptLen / 2) + 0.5, OptLen);
+         }
+         
+         
+         
+         
+      };
+
+      var Tr1GridLocal = [],
+         Tr2GridLocal = [],
+         ColGridLocal = [],
+         XMLColGridLocal = '';
+
+      $('column', self.RepVar.STable3).each(function (i, v) {
+         var $v = $(v), Tr1Grid = {},
+            subcolumn = $('subcolumn', $v);
+         Tr1Grid.ColSpan = subcolumn.length;
+         Tr1Grid.RowSpan = subcolumn.length == 1 ? 2 : 1;
+         var idvalue = $v.attr('idvalue'),
+            idmultiline = $v.attr('idmultiline');
+         Tr1Grid.value = idmultiline == 'no' ? '<nobr>' + idvalue + '</nobr>' : idvalue;
+         Tr1Grid.Align = $v.attr('idalign');
+         Tr1Grid.MultiLine = $v.attr('idmultiline');
+         subcolumn.each(function (j, o) {
+            var $o = $(o);
+            if (subcolumn.length > 1) {
+               var Tr2Grid = {};
+               idvalue = $o.text();
+               idmultiline = $o.attr('idmultiline');
+               Tr2Grid.value = idmultiline == 'no' ? '<nobr>' + idvalue + '</nobr>' : idvalue;
+               Tr2Grid.Align = $o.attr('idalign');
+               Tr2GridLocal.push(Tr2Grid);
+            }
+            else {
+               Tr1Grid.Align = $o.attr('idalign');
+            }
+            var ColGrid = {};
+            ColGrid.Dat = $o.attr('idprim');
+            ColGrid.id = i;
+            ColGrid.width = ko.observable();
+            ColGrid.value = $('<a>'+idvalue+'</a>').text();
+            ColGrid.check = ko.observable(true);
+		    ColGrid.disableCheck = Tr1Grid.RowSpan==1;
+            ColGrid.Sortcheck = ko.observable(false);
+            ColGrid.SortTypeSelected = ko.observable(false);
+            ColGrid.SortOption = ko.observableArray(['صعودي', 'نزولي']);
+            if ($o.attr('idwidth') == "1") {
+               $o.attr('idwidth', "0")
+               self.V_.HideCols.push(ColGrid.Dat)
+            }
+            ColGrid.width($o.attr('idwidth'));
+            self.ViewModel.SettingColsWidth.push($o.attr('idwidth'));
+            var col = ColGridLocal.length + 1;
+		    ColGrid.col = col-1;
+            ColAttr['MULTILINE' + col] = idmultiline == 'no' ? '0' : '1';
+            ColAttr['ALIGN' + col] = $o.attr('idaligndata');
+            ColAttr['DIR' + col] = $o.attr('iddir');
+            ColAttr['SHOWTAG' + col] = ($o.attr('parsehtml')=="1" || window.location.hostname!='orkide.nowpardaz.local')?"0":"3";
+		   
+		   
+		   
+		    try {
+		      var $vv=$('STable2[idlable="4"][id="'+ColGrid.Dat+'"]', STable2)
+              ColAttr['COLTYPE' + col] = $vv.attr('idtypesort');
+			} catch (e) { }
+            var Dat = '';
+            try {
+               Dat = ColGrid.Dat.substr(1);
+            }
+            catch (e) { }
+            XMLColGridLocal += '<col Dat="' + Dat + '">';
+            ColGridLocal.push(ColGrid);
+         });
+         Tr1GridLocal.push(Tr1Grid);
+
+      });
+      self.ViewModel.Tr1Grid(Tr1GridLocal);
+      self.ViewModel.Tr2Grid(Tr2GridLocal);
+      self.ViewModel.ColGrid(ColGridLocal);
+      self.ViewModel.XMLColGrid = XMLColGridLocal;
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      self.ViewModel.ColAttr = ColAttr;
+      self.CreateStyle();
+      self.V_.ColGrid = self.ViewModel.ColGrid();
+      self.V_.ColGridTemp = self.ViewModel.ColGrid();
+
+   },
+   styleForTable1: function () {
+      var self = this;
+      self.XAttrToViewModel('Table1_2_width', $('STable1_2', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_3_width', $('STable1_3', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_4_width', $('STable1_4', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_6_width', $('STable1_6', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_7_width', $('STable1_7', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_8_width', $('STable1_8', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_9_width', $('STable1_9', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_10_width', $('STable1_10', self.RepVar.STable1), 'idwidth');
+      self.XAttrToViewModel('Table1_2_align', $('STable1_2', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_3_align', $('STable1_3', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_4_align', $('STable1_4', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_6_align', $('STable1_6', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_7_align', $('STable1_7', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_8_align', $('STable1_8', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_9_align', $('STable1_9', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_10_align', $('STable1_10', self.RepVar.STable1), 'idalign');
+      self.XAttrToViewModel('Table1_2_html', $('STable1_2', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_3_html', $('STable1_3', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_4_html', $('STable1_4', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_6_html', $('STable1_6', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_7_html', $('STable1_7', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_8_html', $('STable1_8', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_9_html', $('STable1_9', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('Table1_10_html', $('STable1_10', self.RepVar.STable1), '$html');
+      self.XAttrToViewModel('ArmBin', null, '$html');
+      self.Val('Table1_2_html', self.npFormat(self.Val('Table1_2_html')));
+      self.Val('Table1_3_html', self.npFormat(self.Val('Table1_3_html')));
+      self.Val('Table1_4_html', self.npFormat(self.Val('Table1_4_html')));
+      self.Val('Table1_6_html', self.npFormat(self.Val('Table1_6_html')));
+      self.Val('Table1_7_html', self.npFormat(self.Val('Table1_7_html')));
+      self.Val('Table1_8_html', self.npFormat(self.Val('Table1_8_html')));
+      self.Val('Table1_9_html', self.npFormat(self.Val('Table1_9_html')));
+      self.Val('Table1_10_html', self.npFormat(self.Val('Table1_10_html')));
+      try {
+         var ab = $(self.XMLStrc[0]).attr("armBin");
+         if (ab && ab != '')
+            self.Val("ArmBin", "<img src='data:image/gif;base64," + ab + "' />")
+      } catch (e) {
+         if (typeof (drwarm) == 'undefined') drwarm = true;
+         if ($(self.XMLStrc[0]).attr("arm") == '2' && drwarm)
+            self.Val("ArmBin", "<img src='/univ/img/rep_unvarm.gif' />")
+      }
+
+   },
+
+   Get_Data: function (HEvent, Params) {
+      var self = this, e = self.element, op = self.options;
+      self._super.apply(self, arguments);
+      switch (self.ActNo) {
+         case '00': {
+            self.V_.usrlvl = op.OpenerSelf?.UserLvl || 0;
+            self.$np("#dvfrmHeader").addClass('np-d-none');
+            self.$np("#dvfrmCenter").css('overflow-x', 'auto');
+            if (self.ToExcel) {
+              var ExcelGridBtn = '<button type="button" class="btn btn-outline-info excel"> نمايش جدولي </button>';
+              $('Button:eq(0)',self.W_.$tbFooterAlignment).parent().append(ExcelGridBtn);
+              $('button.excel',self.W_.$dvfrmFooter).click(function(){
+                self.ToExcel();
+              });
+            }
+            if (self.ErLen > 0)
+               self.W_.$dvfrmFooter.show();
+
+            self.ViewModel.BreakGrid([]);
+            self.V_.Marking = self.Val('BQU');
+            self.V_.PrintType = self.Val('BQV');
+            self.V_.Paper = self.Val('BQe');
+            
+            var Settings_Tab = self.$np("#AFhP").append("<ul class='alert-secondary' style='display: flex;flex-grow: 20px;justify-content: space-between;list-style: none;'><li class=' btn btn-info btn-warning' style='cursor:pointer' tab='1'>تغببر اندازه ستونها</li><li class=' btn btn-info' style='cursor:pointer' tab='2'>مرتب سازي</li><li class=' btn btn-info' style='cursor:pointer' tab='3'>شكست</li><li class=' btn btn-info' style='cursor:pointer' tab='4'>ساير تنظيمات</li></ul>")
+            self.$np("#dvfrmFooter").find("div.table").find("div:eq(2)").prepend(self.$np("#S50"));
+            self.V_.vm_pub = self.Val("BMu");
+            self.V_.vm_pri = self.Val("BMv");
+            
+            if (op.OpenerSelf?.Val("CloseFlt") == "1")
+               $('#' + self.MakeFullId("IM09"), self.W_.$dvfrmFooter).hide();
+            $(Settings_Tab).on('click', function (el) {
+               if ($(el.target).hasClass("disabled"))
+                  return;
+               if ($(el.target).attr("tab")) {
+                  $(el.target).addClass("btn-warning")
+                  $(el.target).siblings('li').removeClass("btn-warning")
+               }
+               switch ($(el.target).attr("tab")) {
+                  case '1': {
+                     self.$np("#AFhR").show().siblings('div').hide();
+                     break;
+                  }
+                  case '2': {
+                     self.$np("#AFhS").show().siblings('div').hide();
+                     break;
+                  }
+                  case '3': {
+                     self.$np("#AFhT").show().siblings('div').hide();
+
+                     var BreakGridObj;
+                     var BreakGridArr = [];
+                     for (var i = 0; i < self.Val('lengthOfB'); i++) {
+                        BreakGridObj = {};
+                        var s = $($("stable2[idlable=1][idshow=1]", self.RepVar.STable2)[i]);
+                        if (s.length) {
+                           BreakGridObj.value = s.text();
+                           BreakGridObj.BreakOption = ko.observableArray(['صعودي', 'نزولي']);
+                           BreakGridObj.BreakTypeSelected = s.attr("idordersort") == "ascending" ? ko.observable('صعودي') : ko.observable('نزولي')
+                           BreakGridObj.ShowCheck = s.attr("idshow") == "1" ? ko.observable(true) : ko.observable(false);
+                           BreakGridObj.BreakCheck = ko.observable(true);
+                           BreakGridArr.push(BreakGridObj);
+                        }
+                     }
+                     self.ViewModel.BreakGrid(BreakGridArr);
+
+
+                     break;
+                  }
+                  case '4': {
+
+                     self.$np("#AFhQ").show().siblings('div').hide();
+                     break;
+                  }
+
+               }
+            })
+            self.$np('#BQS').on('click', function () {
+               self.Val('BQU', self.Val('BQG'));
+               self.Val('BQV', self.Val('BQH'));
+               self.Val('BQe', self.Val('BQI'));
+               self.Val('vmargintop', self.Val('BQJ'));
+               self.Val('vmarginbottom', self.Val('BQK'));
+               self.Val('vmarginright', self.Val('BQL'));
+               self.Val('vmarginleft', self.Val('BQM'));
+               if (self.Val('BQP'))
+                  self.Val('recordInPrint', self.Val('BQP'));
+               self.Val('recordInDisplay', self.Val('BQf') ? self.Val('BQf') : '20');
+               self.Val('HRecordInPrint', self.Val('BQR'));
+               self.Val('HRecordInDisplay', self.Val('BQQ'));
+               self.SettingBox.npDialog('close');
+               
+               if (self.ViewModel.RepData()[0].GridInstance()) {
+                  self.ViewModel.RepData()[0].GridInstance()._setOption('LinePerPage', parseInt(self.Val('recordInDisplay')));
+                  self.ViewModel.RepData()[0].GridInstance()._vm.GridRowHeight(self.Val('HRecordInDisplay') + "px");
+                  self.Val("GrdPageCount", self.ViewModel.RepData()[0].GridInstance()._vm.pagecount());
+                  self.Val("GrdCurrPage", self.ViewModel.RepData()[0].GridInstance()._vm.currpage());
+				  self.ViewModel.gofirst();
+
+               }
+               if (self.Val('BQU') == "0")
+                  self.ViewModel.idPage("0");
+               else if (self.Val('BQU') == "1")
+                  self.ViewModel.idPage("1");
+               else if (self.Val('BQU') == "2")
+                  self.ViewModel.idPage("2");
+               else
+                  self.ViewModel.idPage("3");
+               self.SetPageNumber();
+               self.SetPageSizeLabel(self.Val('BQe'));
+            });
+            self.$np('#BQT').on('click', function () {
+               self.SettingBox.npDialog('close');
+            });
+
+            break;
+         }
+         case '08': {
+            var s;
+            s = self.Val('BMt');
+            self.Val('BMt', '');
+            if (!(s == "")){
+              self.XMLDat = $('Root>row', $($.parseXML('<?xml version="1.0" encoding="utf-8"?>' + s)));		   
+			  if (self.XMLDat.length == 0)
+				self.V_.NoData = 1;
+			  else
+				self.V_.NoData = 0;
+			  self.InitFrm(false);
+			}
+            self.LastNodes = [];
+            if (op.CustomParams && op.CustomParams.HideButtons) {
+               $("button.NPCommanderButtons", self.W_.$dvfrmFooter).hide();
+               self.ViewModel.TPageShow(0);
+            }
+
+            self.W_.$dvfrmFooter.show();
+            self.Val('BQU', self.V_.Marking);
+            self.Val('BQV', self.V_.PrintType);
+            self.Val('BQe', self.V_.Paper);
+            if (self.Val('RXH') == "0")
+               $('#' + self.MakeFullId("IM04"), self.W_.$dvfrmFooter).hide(); 
+            if (self.Val("RX8") == "1") {
+               self.Val("RX8", "0");
+               self.ErrorsReasons();
+               return;
+            }
+            if (self.Val("Ra3") == "1") { 
+               var filename = self.Val("Ra1");
+			   var ClientFileName = self.Val("Arap") || "export";
+               self.Val("Ra3", "0");
+               if (!self.V_.ifr)
+                  self.V_.ifr = document.createElement("iframe");
+               self.V_.ifr.style.height = "0px";
+               self.V_.ifr.style.border = "0px";
+               self.V_.ifr.src = "/frm/npdwn/getfile.ashx?fn=" + filename + ".xlsx&cfn="+ClientFileName+".xlsx";
+               document.body.appendChild(self.V_.ifr);
+            }
+              if (self.Val("Ra3") == "2") {
+                  var filename = self.Val("Ra1");
+                  var ClientFileName = self.Val("Arap") || "export";
+                  self.Val("Ra3", "0");
+                  if (!self.V_.ifr)
+                      self.V_.ifr = document.createElement("iframe");
+                  self.V_.ifr.style.height = "0px";
+                  self.V_.ifr.style.border = "0px";
+                  self.V_.ifr.src = "/frm/npdwn/getfile.ashx?fn=" + filename + ".html&cfn=" + ClientFileName + ".html";
+                  document.body.appendChild(self.V_.ifr);
+              }
+              if (self.Val("Ra3") == "3") {
+                  var filename = self.Val("Ra1");
+                  var ClientFileName = self.Val("Arap") || "export";
+                  self.Val("Ra3", "0");
+                  if (!self.V_.ifr)
+                      self.V_.ifr = document.createElement("iframe");
+                  self.V_.ifr.style.height = "0px";
+                  self.V_.ifr.style.border = "0px";
+                  self.V_.ifr.src = "/frm/npdwn/getfile.ashx?fn=" + filename + ".pdf&cfn=" + ClientFileName + ".pdf";
+                  document.body.appendChild(self.V_.ifr);
+              }
+           
+            if (s == "")
+               return;
+            
+            self.$np("#RepDataParent").html("");
+            if (self.V_.NoResult)
+               $("div:last", self.$np('#dvfrmCenter')).remove();
+            if (self.XMLDat.length == 0) {
+               self.ViewModel.RepHeader("");
+               self.V_.NoResult = "<div style='text-align:center;color:red;font-size:25px;padding-top:20%'>اطلاعاتي جهت نمايش يا چاپ موجود نيست</div>";
+               self.$np('#dvfrmCenter').append(self.V_.NoResult);
+               
+               
+               return;
+            }
+
+            
+            
+            if (self.V_.usrlvl && (self.V_.usrlvl & 0x10000000) == 0) {
+               setTimeout(function () {
+                  
+                  $(self.element).css({ "background-image": 'url("/_images/nonprintable.gif")', "background-position": "top", "background-repeat": "no-repeat" });
+               }, 0)
+
+            } else {
+               $(self.element).css({ "background-image": 'none' });
+            }
+            s = self.Val('BMs');
+            self.Val('BMs', '');
+		   
+		    
+            
+            self.XMLStrc = $('root', $.parseXML('<?xml version="1.0" encoding="utf-8"?>' + s));
+							 
+            self.RepVar = {};
+            self.DefineXML();
+            self.styleForTable1();
+		    
+		    
+		    self.ViewModel.ShowTag=0;
+            if ($("stable3>column", self.XMLStrc[0]).length < 2 && $("stable3>column:eq(0)", self.XMLStrc[0]).attr("idvalue") == "") {
+               self.ViewModel.HasGrid(0);
+               $('column', self.RepVar.STable3).each(function (i, v) {
+                 var $v = $(v), Tr1Grid = {},
+                     subcolumn = $('subcolumn', $v);
+                 subcolumn.each(function (j, o) {
+                   var $o = $(o);
+				   
+				   
+				   
+				   
+		           
+		           
+				   var SHOWTAG = ($o.attr('parsehtml')=="1" || window.location.hostname!='orkide.nowpardaz.local')?"0":"1";
+				   
+				   self.ViewModel.ShowTag=SHOWTAG;
+				   
+					 
+				   
+				 });
+			   });
+			}
+            if (self.ViewModel.HasGrid())
+               self.$np("#dvfrmCenter").css("margin-right", "40px").css("margin-left", "40px");
+            var InitData_Ret = self.InitData(s);
+			if (self.XMLDat.length==1){
+  			  self.$np('#S50').hide();
+			  
+			  
+			  
+			  
+			  
+			} else {
+			  self.$np('#S50').show();
+			}
+		   
+            
+            
+            if (!self.V_.RunAct08Again) {
+               self.ViewModel.ColGrid()
+               
+
+               
+
+
+               self.ViewModel.gonext = function (data, ev) {
+                  ev && $(ev.currentTarget).blur();
+                  if (!self.ViewModel.HasGrid())
+                     return;
+                  try { var C = parseInt(self.ViewModel.CurrPage()); }
+                  catch (e) { C = 0 }
+				  var RepDataLocal = self.ViewModel.RepDataArray()[0];
+                  if (C < RepDataLocal.length) {
+                     self.Val('GrdCurrPage', 1);
+                     self.ViewModel.CurrPage(C + 1);
+                  }
+                  self.SetPageNumber();
+                  self.ResetGrdPageVariables();
+                  
+               };
+               self.ViewModel.goprev = function (data, ev) {
+                  ev && $(ev.currentTarget).blur();
+                  if (!self.ViewModel.HasGrid())
+                     return;
+                  if (self.ViewModel.CurrPage() > 1) {
+                     self.Val('GrdCurrPage', 1);
+                     self.ViewModel.CurrPage(self.ViewModel.CurrPage() - 1);
+                  }
+                  self.SetPageNumber();
+                  self.ResetGrdPageVariables();
+               };
+
+               self.ViewModel.ShowAllColsInSettingClick = function (data, ev) {
+                  $.each(self.ViewModel.ColGrid(), function (i, v) {
+                     v.check(ev.currentTarget.checked);
+                  })
+                  self.ViewModel.RadifShow(ev.currentTarget.checked);
+                  return true;
+               }
+
+
+
+               self.ViewModel.gofirst = function (data, ev) {
+                  
+
+                  ev && $(ev.currentTarget).blur();
+                  var Grd = self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+                  if (!self.ViewModel.HasGrid()) {
+                     self.ViewModel.CurrPage(1);
+                     return;
+                  }
+                  self.Val('GrdCurrPage', 1);
+                  Grd._vm.currpage(1);
+                  self.ViewModel.CurrPage(1);
+                  self.SetPageNumber();
+
+               };
+               self.ViewModel.golast = function (data, ev) {
+                  
+                  ev && $(ev.currentTarget).blur();
+                  var Grd = self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+                  if (!self.ViewModel.HasGrid()) {
+                     self.ViewModel.CurrPage(self.ViewModel.PageCountInAll());
+                     return;
+                  }
+                  var C = 0;
+				  var RepDataLocal = self.ViewModel.RepDataArray()[0];
+                  var LastGrd = RepDataLocal[RepDataLocal.length - 1].Grid;
+                  C += parseInt((LastGrd.length / self.ViewModel.RepData()[0].GridInstance().options.LinePerPage))
+                  C = (LastGrd.length % self.ViewModel.RepData()[0].GridInstance().options.LinePerPage) ? C + 1 : C;
+                  self.Val('GrdCurrPage', C);
+                  self.ViewModel.CurrPage(RepDataLocal.length);
+                  Grd._vm.currpage(C);
+                  self.SetPageNumber();
+
+               };
+               self.ViewModel.gopage = function (data, ev) {
+                  
+                  var Val = ev.currentTarget ? parseInt($(ev.currentTarget).val()) : parseInt($(ev).val());
+                  self.ViewModel.CurrPageInAll(Val);
+                  var Grd = self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+
+                  if (Val > self.Val("PageCountInAll") || Val < 1)
+                     return
+                  if (!Grd && !self.ViewModel.HasGrid()) {
+                     self.ViewModel.CurrPage(Val);
+                     return;
+                  }
+                  var RepDataLocal = self.ViewModel.RepDataArray()[0];				 
+                  var AllGrdCount = 0;
+                  for (var i = 1; i <= RepDataLocal.length; i++) {
+                     self.ViewModel.CurrPage(i);
+                     self.Val('GrdCurrPage', 1)
+                     if (Val <= Grd._vm.pagecount() + AllGrdCount) {
+                        Grd._vm.currpage(Val - AllGrdCount);
+                        self.Val('GrdCurrPage', parseInt(Grd._vm.currpage()));
+                        self.SetPageNumber();
+                        return;
+                     }
+                     AllGrdCount += Grd._vm.pagecount();
+                  }
+               };
+               self.ViewModel.gonextGrdPage = function (data, ev) {
+                  
+                  ev && $(ev.currentTarget).blur();
+                  var Grd = self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+                  if (!Grd && !self.ViewModel.HasGrid()) {
+                     self.ViewModel.CurrPage(parseInt(self.ViewModel.CurrPage()) + 1);
+                     return;
+                  }
+                  var RepDataLocal = self.ViewModel.RepDataArray()[0];				 
+                  if (Grd._vm.currpage() < Grd._vm.pagecount()) {
+                     Grd._vm.currpage(parseInt(Grd._vm.currpage()) + 1);
+                     self.Val('GrdCurrPage', parseInt(Grd._vm.currpage()));
+                  } else if (self.ViewModel.CurrPage() < RepDataLocal.length) {
+                     self.ViewModel.CurrPage((parseInt(self.ViewModel.CurrPage()) + 1));
+                     self.Val('GrdCurrPage', 1)
+                     Grd._vm.currpage(1);
+                  }
+                  self.SetPageNumber();
+               };
+               self.ViewModel.goprevGrdPage = function (data, ev) {
+                  
+                  ev && $(ev.currentTarget).blur();
+                  var Grd = self.ViewModel.RepData() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance();
+                  if (!Grd && !self.ViewModel.HasGrid()) {
+                     self.ViewModel.CurrPage((parseInt(self.ViewModel.CurrPage()) - 1));
+                     return;
+                  }
+                  if (Grd._vm.currpage() > 1) {
+                     Grd._vm.currpage(parseInt(Grd._vm.currpage()) - 1);
+                     self.Val('GrdCurrPage', parseInt(Grd._vm.currpage()));
+                  } else if (self.ViewModel.CurrPage() > 1) {
+                     var C = 0;
+                     var RepDataLocal = self.ViewModel.RepDataArray()[0];					
+                     var PrevGrid = RepDataLocal[self.ViewModel.CurrPage() - 2].Grid;
+                     C += parseInt((PrevGrid.length / self.ViewModel.RepData()[0].GridInstance().options.LinePerPage))
+                     C = (PrevGrid.length % self.ViewModel.RepData()[0].GridInstance().options.LinePerPage) ? C + 1 : C;
+                     self.ViewModel.CurrPage((parseInt(self.ViewModel.CurrPage()) - 1));
+                     self.Val('GrdCurrPage', C)
+                     Grd._vm.currpage(C);
+
+                  }
+                  self.SetPageNumber();
+
+               };
+
+            }
+
+            
+            var GrdHeight = 0;
+            var DIVTable3Prim = $("#" + self.MakeFullId("DIVTable3Prim>div>table"), $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter')));
+            $.each(DIVTable3Prim.siblings(), function (i, v) {
+               GrdHeight += $(v).outerHeight();
+            })
+            GrdHeight = self.$np('#dvfrmCenter').outerHeight() - GrdHeight - $("#Table1", self.$np('#dvfrmCenter')).outerHeight() - $("#DIVRem", self.$np('#dvfrmCenter')).outerHeight() - 100;
+            $("#" + self.MakeFullId("DIVTable3Prim>div>table"), $(self.$np("#RepDataParent>div"), self.$np('#dvfrmCenter'))).npgrid("option", "height", GrdHeight);
+            
+
+            if (!self.V_.RunAct08Again) {
+               
+
+               self.ViewModel.CurrPage.subscribe(function (NewValue) {
+                  if (isNaN(NewValue)) return;
+                  var RepDataLocal = self.ViewModel.RepDataArray()[0];				 
+                  if (NewValue > RepDataLocal.length) {
+                     self.Val('CurrPage', RepDataLocal.length);
+                     return;
+                  }
+                  if (NewValue < 1) {
+                     return;
+                  }
+                  FirstData = RepDataLocal[NewValue - 1];
+                  self.ViewModel.RepData()[0].Grid(FirstData.Grid);
+                  self.ViewModel.RepData()[0].GridInXml(FirstData.GridInXml);
+                  self.ViewModel.HasGrid() && self.ViewModel.RepData()[0].GridInstance().refresh(FirstData.GridInXml);
+                  self.ViewModel.RepData()[0].Table2(FirstData.Table2);
+                  self.ViewModel.RepData()[0].Table5(FirstData.Table5);
+                  self.ViewModel.RepData()[0].divPic(FirstData.divPic);
+                  for (var i = 1; i < 9; i++) {
+                     self.ViewModel.RepData()[0]['divBT' + i](FirstData['divBT' + i]);
+                     self.ViewModel.RepData()[0]['divBFPT' + i](FirstData['divBFPT' + i]);
+                  }
+                  self.ViewModel.RepData()[0].NR(FirstData.NR);
+                  self.ViewModel.RepData()[0].ND(FirstData.ND);
+                  if (self.ViewModel.idPage() == "4" || self.ViewModel.idPage() == "5") {
+                     self.Val('Table1_10_html', FirstData.NR);
+                     self.Val('Table1_8_html', FirstData.ND);
+                     self.Val("Table1_8_html", self.npFormat(self.Val("Table1_8_html")));
+                     self.Val("Table1_10_html", self.npFormat(self.Val("Table1_10_html")));
+                  }
+                  self.ViewModel.RepData()[0]['M'](self.npFormat(FirstData.M));
+                  self.ViewModel.RepData()[0]['M1'](self.npFormat(FirstData.M1));
+                  self.ViewModel.RepData()[0]['M2'](self.npFormat(FirstData.M2));
+                  self.SetPageNumber();
+
+               });
+            }
+            self.$np('#RepDataParent>div').each(function (j, o) {
+               $(o).addClass('Div' + j + '')
+            })
+            self.SetPageNumber();
+            self.SetPageSizeLabel();
+            if (self.ViewModel.HasGrid()) {
+               $(".CHeaderT3 th", self.element).each(function (i, v) {
+                  $(v).html(self.npFormat($(v).html()));
+
+               })
+            }
+            self.ResizeHandler();
+            self.dvfrmCenterHeight();
+
+            break;
+         } 
+      } 
+   },
+   InitData: function (s) {
+      var self = this, e = self.element, op = self.options;
+      self.RepVar.S2 = []
+
+      var stable2 = [];
+      $('STable2', self.RepVar.STable2).each(function (i, v) {
+         var $v = $(v),
+            idlable = $v.attr('idlable'),
+            idbreak = $v.attr("idbreak"),
+            idbrother = $v.attr("idbrother"),
+            idshow = $v.attr('idshow'),
+            id = $v.attr('id'),
+            text = $v.text() || '';
+         stable2.push({ idlable: idlable, idbreak: idbreak, idbrother: idbrother, idshow: idshow, id: id, text: text });
+      });
+      var RepDataLocal = [],
+         RepData = {}, $LastNode = null,
+         AllM = [];
+      var counterRow = 1;
+      self.V_.SpecialGrid = 0;
+      var forceDontTest = false
+      self.XMLDat.each(function (i, v) {
+         var $CurrNode = $(v);
+         AllM.push({
+            M: self.npFormat($CurrNode.attr("M")),
+            M1: self.npFormat($CurrNode.attr("M1")),
+            M2: self.npFormat($CurrNode.attr("M2"))
+         })
+         var test = !forceDontTest ? true : false;
+         forceDontTest = false;
+         if ($LastNode) {
+            for (var i = 0; i < self.RepVar.lengthOfB; i++) {
+               var STable2Child = stable2[i];
+               idbreak = STable2Child.idbreak;
+               if (idbreak && (idbreak == "1")) {
+                  var strTest = STable2Child.idbrother;
+                  if (!$CurrNode.attr(strTest)) {
+                     $CurrNode.attr(strTest, "--");
+                  }
+                  if (!$LastNode.attr(strTest)) {
+                     $LastNode.attr(strTest, "--");
+                  }
+                  if ($LastNode.attr(strTest) != $CurrNode.attr(strTest)) {
+                     test = false;
+                     counterRow = 1;
+                  }
+               }
+            }
+
+            if (self.RepVar.lengthOfB == 0 && !self.ViewModel.HasGrid()) {
+               test = false;
+               counterRow = 1;
+            }
+            $CurrNode.attr("R", counterRow)
+         }
+         else {
+            $CurrNode.attr("R", counterRow)
+         }
+         if (!$LastNode || !test) {
+            if (!test) {
+               RepDataLocal.push(RepData);
+            }
+            RepData = {};
+            RepData.Grid = [];
+            RepData.GridInXml = $('dat', $.parseXML('<dat/>'));
+            RepData.GridInstance = ko.observable();
+            RepData.Table2 = [];
+            RepData.Table5 = [];
+            RepData.divPic = '';
+            for (var i = 1; i < 9; i++) {
+               self.XAttrToObject(RepData, 'divBT' + i, $CurrNode, 'BLP' + i, '', 1);
+               self.XAttrToObject(RepData, 'divBFPT' + i, $CurrNode, 'BFP' + i, '', 1);
+            }
+            if (self.ViewModel.idPage() == "4" || self.ViewModel.idPage() == "5") {
+               self.XAttrToViewModel('Table1_10_html', $CurrNode, 'NR', '');
+               self.XAttrToViewModel('Table1_8_html', $CurrNode, 'ND', '');
+               self.Val("Table1_8_html", self.npFormat(self.Val("Table1_8_html")));
+               self.Val("Table1_10_html", self.npFormat(self.Val("Table1_10_html")));
+            }
+            self.XAttrToObject(RepData, 'M', $CurrNode, 'M', '');
+            self.XAttrToObject(RepData, 'M1', $CurrNode, 'M1', '');
+            self.XAttrToObject(RepData, 'M2', $CurrNode, 'M2', '');
+
+            $.each(stable2, function (i, v) {
+               var
+                  idlable = v.idlable,
+                  idbreak = v.idbreak,
+                  idshow = v.idshow,
+                  _id = v.id,
+                  t = v.text;
+               var c = $CurrNode.attr(_id);
+               if (t != '') t += ' : ';
+               if (t == '' && c == '--') c = '';
+               if ((idlable == '1' && idbreak == '1' && idshow == '1') || idlable == '2' || idlable == '3') {
+                  if (c && c.substr(0, 4) == '<IMG') {
+                     RepData.divPic = c;
+                  }
+                  else if (idlable != '3') {
+                     RepData.Table2.push(self.npFormat(t + self.changeDirection(c)));
+                  }
+               }
+               if (idlable == '3') {
+                  c.replace(/"/ig, '')
+                  RepData.Table5.push(self.npFormat(t + self.changeDirection(c)));
+               }
+            });
+         }
+         var GridData = {};
+         for (var i = 0; i < self.RepVar.lengthOfC; i++) {
+            var NodeId = (i + 1),
+               Att = $CurrNode.attr('C' + NodeId);
+            (Att === undefined) ? $CurrNode.attr('C' + NodeId, '--') : '';
+            if (!self.ViewModel.HasGrid())
+               self.V_.SpecialGrid = 1;
+            if (self.ViewModel.HasGrid())
+               GridData[NodeId] = Att ? Att : '';
+            else {
+               if (self.ViewModel.ColAttr["DIR1"] != "ltr")
+                  GridData["value"] = Att ? self.npFormat(Att) : '';
+               else
+                  GridData["value"] = Att ? '<div dir="ltr">' + self.npFormat(Att) + '</div>' : '';
+
+            }
+         }
+
+
+
+
+         counterRow++;
+
+         RepData.Grid.push(GridData);
+         RepData.GridInXml.append($CurrNode.clone());
+         $LastNode = $CurrNode;
+         if (self.V_.SpecialGrid && RepData.Grid.length == self.Val('recordInDisplay')) {
+            forceDontTest = true;
+            counterRow = 1;
+         }
+      });
+
+
+
+      if ($LastNode) {
+         self.LastNodes.push($LastNode);
+         RepDataLocal.push(RepData);
+      }
+      self.ViewModel.RepBtnList([{ Typ: 'BtnList' }]);
+      self.ViewModel.RepHeader([{ Typ: 'Header' }]);
+      self.ViewModel.RepFooter([{ Typ: 'Footer' }]);
+      self.ViewModel.RepSettingCols([{ Typ: 'RepSettingCols' }]);
+      self.ViewModel.RepSortTab([{ Typ: 'RepSortTab' }]);
+      self.ViewModel.RepBreakChange([{ Typ: 'RepBreakChange' }]);
+      var FirstData = RepDataLocal[0];
+      RepData = {};
+
+      self.Val('PageCount', RepDataLocal.length);
+      RepData.Grid = ko.observableArray(FirstData.Grid);
+      RepData.GridInXml = ko.observable(FirstData.GridInXml);
+      RepData.GridInstance = ko.observable();
+      RepData.Table2 = ko.observableArray(FirstData.Table2);
+      RepData.Table5 = ko.observableArray(FirstData.Table5);
+      RepData.divPic = ko.observable(FirstData.divPic);
+      RepData.AllM = AllM;
+      for (var i = 1; i < 9; i++) {
+         RepData['divBT' + i] = ko.observable(FirstData['divBT' + i]);
+         RepData['divBFPT' + i] = ko.observable(FirstData['divBFPT' + i]);
+      }
+      RepData.NR = ko.observable(FirstData.NR);
+      RepData.ND = ko.observable(FirstData.ND);
+      if (self.ViewModel.idPage() == "4" || self.ViewModel.idPage() == "5") {
+         self.Val('Table1_10_html', FirstData.NR);
+         self.Val('Table1_8_html', FirstData.ND);
+      }
+      RepData['M'] = ko.observable(self.npFormat(FirstData.M));
+      RepData['M1'] = ko.observable(self.npFormat(FirstData.M1));
+      RepData['M2'] = ko.observable(self.npFormat(FirstData.M2));
+
+      var _vm = self._vm = self.ViewModel;
+      self.ViewModel.RepData([RepData]);
+      if (self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance())
+         self.ViewModel.RepData()[0].GridInstance()._setOption('LinePerPage', parseInt(self.Val('recordInDisplay')));
+      self.ViewModel.RepDataArray.removeAll();
+      self.ViewModel.RepDataArray.push(RepDataLocal);
+      self.Val('CurrPage', 1);
+      if (self.ViewModel.HasGrid()) {
+         self.Val('GrdCurrPage', parseInt(RepData.GridInstance()._vm.currpage()));
+         self.Val('GrdPageCount', parseInt(RepData.GridInstance()._vm.pagecount()));
+      } else {
+         self.Val('GrdCurrPage', 1);
+         self.Val('GrdPageCount', self.ViewModel.RepDataArray.length);
+      }
+      return {
+         RepDataLocal: RepDataLocal,
+         RepData: RepData
+      }
+   },
+   ResetGrdPageVariables: function () {
+      var self = this, e = self.element, op = self.options;
+      if (self.ViewModel.RepData()[0].GridInstance()) {
+         self.ViewModel.RepData()[0].GridInstance()._vm.currpage(1)
+         self.Val("GrdPageCount", self.ViewModel.RepData()[0].GridInstance()._vm.pagecount());
+         self.Val("GrdCurrPage", self.ViewModel.RepData()[0].GridInstance()._vm.currpage());
+      }
+
+   },
+   CreateStyle: function () {
+      var self = this, e = self.element, op = self.options;
+      var link = document.createElement('link')
+      link.type = 'text/css'
+      link.rel = 'stylesheet'
+      link.href = '/css/rep/Fonts.css';
+
+      if ($("link[href='/css/rep/Fonts.css']", 'head').length == 0)
+         $('head').append(link);
+
+	 
+      var link1 = document.createElement('link')
+      link1.type = 'text/css'
+      link1.rel = 'stylesheet'
+      link1.href = '/css/rep/' + self.Val("idstyle") + '.css';
+
+      if ($("link[href='" + '/css/rep/' + self.Val("idstyle") + ".css']", 'head').length == 0)
+         $('head').append(link1);
+      $(e).addClass(self.Val("idstyle"));
+
+
+   },
+   SetPageSizeLabel: function (w) {
+      var self = this, e = self.element, op = self.options;
+      var Width = w ? parseInt(w) : parseInt(self.Val("Table1_width"));
+      var wA5H = 715, wA5W = 500, wA4H = 1075, wA4W = 715, wA3H = 1500, wA3W = 1075;
+      var hA5H = 765, hA5W = 500, hA4H = 1075, hA4W = 765, hA3H = 1500, hA3W = 1075;
+      var Tpage = "";
+      self.V_.PgMaxHeight = 0;
+      if (Width <= wA5W) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/A5P.gif' style='visibility:visible' title='قابل چاپ روي كاغذ A5 در جهت معمولي' />";
+         self.V_.PgMaxHeight = hA5H;
+      }
+      else if (Width <= wA4W) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/A4P.gif' style='visibility:visible' title='قابل چاپ روي كاغذ A4 در جهت معمولي' />";
+         self.V_.PgMaxHeight = hA4H;
+      }
+      else if (Width <= wA4H) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/A4L.gif' style='visibility:visible' title='قابل چاپ روي كاغذ A4 در جهت طول كاغذ' />";
+         self.V_.PgMaxHeight = hA4W;
+      }
+      else if (Width <= wA3W) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/A3P.gif' style='visibility:visible' title='قابل چاپ روي كاغذ A3 در جهت معمولي' />";
+         self.V_.PgMaxHeight = hA3H;
+      }
+      else if (Width <= wA3H) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/A3L.gif' style='visibility:visible' title='قابل چاپ روي كاغذ A3 در جهت طول كاغذ' />";
+         self.V_.PgMaxHeight = hA3W;
+      }
+      else if (Width > wA3H) {
+         Tpage = "<img style='cursor:pointer' src='/_Images/Upper_A3.gif' style='visibility:visible' title='بايد باحذف ستونهاي گزارش، عرض گزارش كمتر شود' />";
+         self.V_.PgMaxHeight = 10000;
+      }
+      self.Val("TPage", Tpage);
+
+      var h = '';
+      try { h = XMLStructure.documentElement.childNodes[0].attributes.getNamedItem("layout").value; } catch (e) { }
+      if (h == '') return;
+      switch (h) {
+         case 'A5': { self.V_.PgMaxHeight = hA5H; break; }
+         case 'A4': { self.V_.PgMaxHeight = hA4H; break; }
+         case 'A4L': { self.V_.PgMaxHeight = hA4W; break; }
+         case 'A3': { self.V_.PgMaxHeight = hA3H; break; }
+         case 'A3L': { self.V_.PgMaxHeight = hA3W; break; }
+      }
+      self.V_.PgMaxHeight = self.V_.PgMaxHeight - (self.val("vmargintop") * 35 + self.val("vmarginbottom") * 35);
+
+
+   },
+   npFormat: function (text, inPrint) {
+      if (!isNaN(text)) text = text.toString();
+      if (!text) return '';
+      text =(text || '')
+            .replace(/<np +eng=1>/g, '<npCustom lang="eng">')
+            .replace(/<np +eng="1">/g, '<npCustom lang="eng">')
+            .replace(/<\/np>/g, '</npCustom>')
+            .replace(/<npcustom /ig,'<npCustom ')
+            .replace(/<\/npcustom/ig,'</npCustom');
+      var PersianReport = true;
+      var map = np.FarsiNumbers;
+      var EngBox = [];
+      try {
+         var R_FID = this.getFid ? this.getFid() : this.AutXml().aut.f;
+         EnglishReports = ["200", "2000", "2200", "1573", "2199", "1546", "2091", "327", "2578", "2990", "2053", "1122", "1622", "1886"]; 
+         if (EnglishReports.indexOf(R_FID) != -1)
+            PersianReport = false;
+		 if (self.Val('f4o')=='1') {
+		    PersianReport = false;
+		 }
+      } catch (e) {
+
+      }
+      var j = -1;
+      text = text.replace(/<npCustom +[\s\S]*?<\/npCustom>/g, function (v, vv) {
+        var $v = $(v);
+        var w = v.substring(v.indexOf('>')+1,v.indexOf('</np'));
+        var number = $v.attr('number');
+        if (number && number.length == 8 && number.substr(0, 7) == 'decimal') {
+            var decimal = number.substr(7);
+            w = parseFloat(w.replace('/', '.')).toFixed(decimal);
+        }
+        if (number == 'currency') {
+            w = w.replace(/,/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        if ($v.attr('point') == '/') {
+            w = w.replace('.', '/');
+        }
+        if ($v.attr('multiline') == '1') {
+            w = '<span>' + w.replace(/\n/g, '<br/>') + '</span>';
+        }
+        if ($v.attr('lang') == 'eng') {
+            EngBox.push(w);
+            j++;
+            return "#####LATIN" + j + "#####";
+        }
+        return w;
+      })
+      if (PersianReport) {
+      
+		
+        
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+            text = text.replace(/(^|>)[\s\S]*?(.*?)[\s\S]*?(<|$)/g, function (w) {
+               w = w.replace(/.[0-9]+/g, function (v) {
+                  return v.replace(/\./g, "/");
+                  
+               })
+               if (!/[\u0600-\u06FF]/.test(w) && /[A-Za-z]/.test(w.replace(/&nbsp/g, "")))
+                  return w
+               if (/&#[0-9]/g.test(w))
+                  return w;
+               return w.replace(/(?<!LATIN)\d/g, function (v) {
+                  return v.replace(/[0-9]/g, function (w) {
+                     return map[+w]
+                  });
+               });
+            })
+         
+      }
+      for (var i = 0; i < EngBox.length; i++) {
+        var re = "#####LATIN" + i + "#####";
+        var regex = new RegExp(re);
+        if (text.search(regex) != -1) {
+            text = text.replace(regex, EngBox[i])
+        }
+      }
+      return text;
+	 
+	  
+	 
+      
+      var j = 0;
+      if (text.search(/<np +eng=1>/) != -1) {
+         var MachTxt = text.match(/<np +eng=1>[\s\S]*?<\/np>/g);
+         for (var i = j; i < MachTxt.length; i++) {
+            EngBox.push(MachTxt[i]);
+            text = text.replace(/<np +eng=1>[\s\S]*?<\/np>/, "#####LATIN" + j + "#####");
+            j++;
+         }
+      }
+      if (text.search(/<npCustom/) != -1) {
+         if (text.search(/<npCustom .*\S*number=("|')currency("|')/) != -1) {
+            text = text.replace(/<npCustom[^>]*>(.*?)<\/npCustom>/g, function (w) {
+               return w.replace(/>(.*?)</g, function (v) {
+                  v = v.replace(/,/g, "");
+                  return ">" + v.substring(1, v.length - 1).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<";
+
+               })
+            })
+
+         }
+         if (text.search(/<npCustom .*\S*number=("|')decimal\d("|')/) != -1) {
+            var place = parseInt(text.split("decimal")[1].substr(0, 1));
+            text = text.replace(/<npCustom[^>]*>(.*?)<\/npCustom>/g, function (w) {
+               return w.replace(/>(.*?)</g, function (v) {
+                  if (v.split("<")[0].split(">")[1].replace("/", ".") == "")
+                     return "";
+                  return ">" + parseFloat(v.split("<")[0].split(">")[1].replace("/", ".")).toFixed(place) + "<";
+
+               })
+            })
+         }
+         if (text.search(/<npCustom .*\S*lang=("|')eng("|')/) != -1) {
+            var MachTxt = text.match(/<npCustom .*\S*lang=("|')eng("|').*\S*>[\s\S]*?<\/npCustom>/g);
+            for (var i = 0; i < MachTxt.length; i++) {
+               EngBox.push(text.match(/<npCustom .*\S*lang=("|')eng("|').*\S*>[\s\S]*?<\/npCustom>/g));
+               text = text.replace(/<npCustom .*\S*lang=("|')eng("|').*\S*>[\s\S]*?<\/npCustom>/, "#####LATIN" + j + "#####");
+               j++;
+            }
+         }
+
+
+
+
+      }
+      
+
+
+
+
+
+      if (PersianReport) {
+         if (/<(.*[0-9].*)>/.test(text) == false) {
+            if (/[0-9]/.test(text)) {
+               text = text.replace(/,/g, "،");
+               text = text.replace(/.[0-9]+/g, function (w) {
+                  return w.replace(/\./g, "/");
+                  
+               })
+            }
+            if (/[0-9]/.test(text)) {
+               text = text.replace(/[0-9]/g, function (w) { return map[+w] });
+            }
+         }
+         else {
+            text = text.replace(/(^|>)[\s\S]*?(.*?)[\s\S]*?(<|$)/g, function (w) {
+               w = w.replace(/.[0-9]+/g, function (v) {
+                  return v.replace(/\./g, "/");
+                  
+               })
+               if (!/[\u0600-\u06FF]/.test(w) && /[A-Za-z]/.test(w.replace(/&nbsp/g, "")))
+                  return w
+               if (/&#[0-9]/g.test(w))
+                  return w;
+               return w.replace(/[0-9]/g, function (v) {
+                  return v.replace(/[0-9]/g, function (w) {
+                     return map[+w]
+                  });
+               });
+            })
+         }
+      }
+      for (var i = 0; i < EngBox.length; i++) {
+         var re = "#####LATIN" + i + "#####";
+         var regex = new RegExp(re);
+         if (text.search(regex) != -1) {
+            text = text.replace(regex, EngBox[i])
+         }
+      }
+      return text;
+
+   },
+   SetPageNumber: function () {
+      var self = this, e = self.element, op = self.options;
+      var LinePerPage = self.ViewModel.HasGrid() ? self.ViewModel.RepData()[0].GridInstance().options.LinePerPage : "";
+      var recoredInPage = self.ViewModel.HasGrid() ? LinePerPage : self.Val("recordInPage")
+      
+      
+	  
+      var R1,R2;
+	  if(self.ViewModel.HasGrid()){
+		var ch=self.ViewModel.RepData()[0].GridInXml()[0].children;
+		R1=$(ch[ch.length-1]).attr('R');
+		R2=ch.length > 1 ? $(ch[(self.Val("GrdCurrPage") - 1) * LinePerPage]).attr("R") : $(ch[0]).attr("R");
+	  }else{
+		var ch2=self.ViewModel.RepDataArray()[0][self.ViewModel.RepDataArray()[0].length - 1].GridInXml[0].children[0];
+        R1 = $(ch2).attr("R");
+        R2 = self.Val("CurrPage");
+	  }
+
+      
+      
+
+      if (!self.ViewModel.HasGrid()) {
+         self.pageTotalBreak = R1;
+         self.pageBreak = R2;
+      } else {
+
+         self.pageTotalBreak = Math.floor((R1) / parseInt(recoredInPage));
+         if (R1 % parseInt(self.Val("recordInPage")) != 0) {
+            self.pageTotalBreak++;
+         }
+         self.pageBreak = Math.floor((R2) / parseInt(recoredInPage));
+         if (R2 % parseInt(recoredInPage) != 0) {
+            self.pageBreak++;
+         }
+      }
+      if (self.ViewModel.idPage() == "1") {
+         
+         self.Val('Table1_10_html', 'صفحه : <span id="_pg_ORG" >' + self.npFormat(self.pageBreak + "") + '</span> از <span id="_totpg_ORG">' + self.npFormat(self.pageTotalBreak + "") + '</span>');
+
+      }
+      else if (self.ViewModel.idPage() == "2") {
+         self.Val('Table1_10_html', 'صفحه : <span id="_pg_ORG">' + self.npFormat(self.Val('CurrPageInAll')) + '</span> از <span id="_totpg_ORG">' + self.npFormat(self.Val('PageCountInAll')) + '</span>');
+      }
+      else if (self.ViewModel.idPage() == "3") {
+         
+         self.Val('Table1_10_html', 'صفحه : <span id="_pg_ORG">' + self.npFormat(self.pageBreak + "") + '</span> از <span id="_totpg_ORG">' + self.npFormat(self.pageTotalBreak + "") + '</span>(<span id="_pg_ORG">' + self.npFormat(self.Val('CurrPageInAll')) + '</span> از <span id="_totpg_ORG">' + self.npFormat(self.Val('PageCountInAll')) + '</span>) ');
+      }
+      else if (self.ViewModel.idPage() == "0") {
+         self.Val('Table1_10_html', '<span id="_pg_ORG" style="display:none"></span>');
+      }
+      else {
+         if ($("#_totpg", e).length > 0) {
+            self.V_.PageInSpLast = "_totpg";
+            $("#_totpg", e)[0].innerText = self.npFormat(self.pageTotalBreak + "");
+         } if ($("#_totpg_ORG", e).length > 0) {
+            self.V_.PageInSpLast = "_totpg_ORG";
+            $("#_totpg_ORG", e)[0].innerText = self.npFormat(self.pageTotalBreak + "");
+         } if ($("#_brtotpg", e).length > 0) {
+            self.V_.PageInSpLast = "_brtotpg";
+            $("#_brtotpg", e)[0].innerText = self.npFormat(self.pageTotalBreak + "");
+         } if ($("#_brtotpg_ORG", e).length > 0) {
+            self.V_.PageInSpLast = "_brtotpg_ORG";
+            $("#_brtotpg_ORG", e)[0].innerText = self.npFormat(self.pageTotalBreak + "");
+         }
+
+         if ($("#_brpg", e).length > 0) {
+            self.V_.PageInSpFirst = "_brpg";
+            $("#_brpg", e)[0].innerText = self.npFormat(self.pageBreak + "");
+         } if ($("#_brpg_ORG", e).length > 0) {
+            self.V_.PageInSpFirst = "_brpg_ORG";
+            $("#_brpg_ORG", e)[0].innerText = self.npFormat(self.pageBreak + "");
+         } if ($("#_pg", e).length > 0) {
+            self.V_.PageInSpFirst = "_pg";
+            $("#_pg", e)[0].innerText = self.npFormat(self.Val('PageCountInAll'));
+         } if ($("#_pg_ORG", e).length > 0) {
+            self.V_.PageInSpFirst = "_pg_ORG";
+            $("#_pg_ORG", e)[0].innerText = self.npFormat(self.Val('PageCountInAll'));
+         }
+      }
+
+   },
+   changeDirection: function (text) {
+      if (text && text.indexOf("_") != -1) {
+         if (!isNaN(text.split("_")[0]) && !isNaN(text.split("_")[1]))
+            text = "<span style='display:inline-block;direction:ltr'>" + text + "</span>";
+
+      }
+      return text || '';
+
+   },
+   ResizeHandler: function () {
+      var self = this, op = self.options, e = self.element;
+      self._super.apply(self, arguments);
+      if (self.ViewModel.HasGrid && self.ViewModel.HasGrid() && self.ViewModel.RepData()[0] && self.ViewModel.RepData()[0].GridInstance())
+         self.ViewModel.RepData()[0].GridInstance().element.npgrid("ReCalcDim");
+   },
+
+   Reset: function (f) {
+      var self = this, op = self.options, e = self.element;
+      if (!f) {
+         var myWindow = window.open("", "_blank", "width=800, height=600,scrollbars=yes");
+         if (!myWindow) {
+            alert("امكان باز كردن صفحه جديد وجود ندارد - لطفا تنظيمات مرورگر خود را بررسي نماييد.");
+            return;
+         }
+         myWindow.document.write('<!DOCTYPE html><html dir="ltr">');
+         myWindow.document.write("<style>");
+         myWindow.document.write("</style>");
+         myWindow.document.write("</head>");
+         myWindow.document.write("<body dir='rtl'/>");
+
+         
+         var Html = '<DIV id="div1" style=" WIDTH: 347px" align="right"><FONT id="sTitle" face="Golestan system" color="red" size="2"><B></B></FONT></DIV><DIV>'
+         Html += '<TABLE id="tbl0" style=" TABLE-LAYOUT: fixed; BORDER-COLLAPSE: collapse" borderColor="#C0C0C0" height="100%" width="315" border="1"><TR><TD align="middle" width="175" height="20"><FONT face="Golestan system" size="2"><B>عنوان فيلد</B></FONT></TD><TD align="middle" width="70" height="20"><FONT face="Golestan system" size="2"><B>از مقدار</B></FONT></TD><TD align="middle" width="70" height="20"><FONT face="Golestan system" size="2"><B>تا مقدار</B></FONT></TD></TR></TABLE>';
+         Html += '<table id=priTbl cellpadding=0 cellspacing=0 border=0 width_=315px style="ORDER-RIGHT:#C0C0C0 1px solid;TABLE-LAYOUT:fixed;BORDER-BOTTOM:#C0C0C0 1px solid;BORDER-LEFT:#C0C0C0 1px solid;BORDER-COLLAPSE:collapse">'
+         Html += '<tr><td></td></tr>';
+         Html += '</table>';
+
+         Html += '<TABLE id="Table2" style=" TABLE-LAYOUT: fixed; BORDER-COLLAPSE: collapse" borderColor="#C0C0C0" height="27" width="697" border="1"><TR><TD align="middle" width="175" rowSpan="2"><FONT face="Golestan system" size="2"><B>عنوان فيلد</B></FONT></TD><TD align="middle" width="280" colSpan="4" height="20"><FONT face="Golestan system" size="2"><B>مقدار</B></FONT></TD><TD align="middle" width="152" colSpan="8"><FONT face="Golestan system" size="2"><B>شكست و مرتب سازي</B></FONT></TD><TD align="middle" width="45" rowSpan="2"><FONT face="Golestan system" size="1"><B>صعودي نزولي</B></FONT></TD><TD align="middle" width="45" rowSpan="2"><FONT face="Golestan system" size="1"><B>نمايش شكست</B></FONT></TD></TR><TR><TD align="middle" width="70" height="20"><FONT face="Golestan system" size="2">از</FONT></TD><TD align="middle" width="70"><FONT face="Golestan system" size="2">تا</FONT></TD><TD align="middle" width="70"><FONT face="Golestan system" size="2">از</FONT></TD><TD align="middle" width="70"><FONT face="Golestan system" size="2">تا</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">1</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">2</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">3</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">4</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">5</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">6</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">7</FONT></TD><TD align="middle" width="19"><FONT face="Golestan system" size="2">8</FONT></TD></TR></TABLE>';
+         Html += '<table id=pubTbl border=0 cellpadding=0 cellspacing=0 width=697 style="ORDER-RIGHT:#C0C0C0 1px solid;TABLE-LAYOUT:fixed;BORDER-BOTTOM:#C0C0C0 1px solid;BORDER-LEFT:#C0C0C0 1px solid;BORDER-COLLAPSE:collapse" >'
+         Html += '<tr><td></td></tr>';
+
+
+         Html += '</table>';
+
+         myWindow.document.write(Html);
+         myWindow.document.write("</body>");
+         myWindow.document.write("</body>");
+         myWindow.document.write("</html>");
+         
+      }
+   },
+   Close: function () {
+      var self = this, op = self.options;
+      self._super.apply(self, arguments);
+      if (!self.GoToFilter && (self.V_.vm_pub != "<Root/>" || self.V_.vm_pri != "<Root/>"))
+         self.options.OpenerSelf.Close()
+   },
+   getHtml: function(callback2) {
+	  
+	  var self = this;
+	  callback = (ret) => {
+		
+		if (callback2){
+		  callback2(ret);
+		}
+		return ret;
+	  }
+	  this.OpenWindow(true, callback)
+   },
+Cond4673:function(){var self=this;return true;},
+Cond5341:function(){var self=this;return true;},
+Cond5372:function(){var self=this;return true;},
+Cond5373:function(){var self=this;return true;},
+Cond18120:function(){var self=this;return 1==1},
+Cond93186:function(){var self=this;return self.V_.usrlvl && (self.V_.usrlvl & 0x10000000) == 0},
+Cond93187:function(){var self=this;return self.V_.NoData == 1},
+DoActClient:function(act,Params){
+   var self = this, e = self.element, op = self.options;
+   var p=Params;
+   var myEvent=Params.myEvent;
+   if(!self._super(act,Params)) return 0;
+   var inxml, outpar, FTYPE, FID, SUBFID, ACT, ACT00;
+
+},
+	
+});
+
+})(jQuery,NowPardaz)
+//# sourceURL=BAS0237_CMP_ViewReport

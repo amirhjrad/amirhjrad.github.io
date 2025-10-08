@@ -1,0 +1,405 @@
+﻿(function($,np){
+$.widget("np.BAS0203_CMP_Sort_REP_FILTER", $.np.npform, {
+	options : {
+	    fname: 'BAS0203_CMP_Sort_REP_FILTER',
+	    ftitle:'فيلتر گزارشها'
+	},
+	_create : function() {
+		var self=this,
+			op=self.options,
+			e=self.element;
+
+        
+
+        op.AfterLoad=function(){
+        
+            
+        
+        };
+		
+        this._super();
+		
+        
+        
+        //$(window).on('resize' + self.eventNamespace, $.proxy(self.ResizeHandler, self));
+		        
+        self.ResizeHandler();
+
+	},
+    _ViewModel2XML:function(act){
+  if(act!='Cmp'){
+    return this._super.apply(this,arguments);	
+  }
+  var self=this, ret={}, id;
+  var SortList=self.FRM_ViewModel['_Sort'+np.OPTOPT]();  
+  for(var i=0;i<SortList.length;i++){
+	if(id=SortList[i].id()){
+	   ret[id+'_Q']=i+1;
+	   ret[id+'_B']=SortList[i].fk()==1?'B':(SortList[i].ft()==1?'S':'');
+	   ret[id+'_A']=SortList[i].fd()==1?'1':'0';
+	   ret[id+'_S']=SortList[i].bw();
+	}
+  }
+  return ret;
+},
+Reset:function(firsttime){
+  var self = this;
+  this._super.apply(this,arguments);
+
+  if(!firsttime){
+  	var SortList=self.FRM_ViewModel['_Sort'+np.OPTOPT]();
+    for(var i=0;i<self.V_.MaxSortSeq;i++)
+	  SortList[i].id(null);
+	$.each(self.V_.SortStruc,function(i,v){
+	  self.V_.SortStruc2[v.id]=v;
+	  if(v.fq){
+		SortList[v.fq-1].bd(v.bd);
+		SortList[v.fq-1].id(v.id);
+		SortList[v.fq-1].fk(v.fk);
+		SortList[v.fq-1].ft(v.ft);
+		SortList[v.fq-1].fd(v.fd);
+		SortList[v.fq-1].bl(v.bl);
+		SortList[v.fq-1].bw(v.bw);
+		SortList[v.fq-1].bt(v.bt);
+	  }
+    });
+	var Showcol=self.FRM_ViewModel['_Showcol'+np.OPTOPT]();
+	$.each(self.V_.ShowcolStruc,function(i,v){
+      Showcol[i].id(v.id);
+	  Showcol[i].caption(v.c);
+	  Showcol[i].chk(false);
+    });
+	
+  }
+},
+Get_Data : function(HEvent, Params) {   
+  var self = this, e = self.element, op = self.options;
+  self._super.apply(this,arguments);
+  if (self.ActNo=='00'){
+	if(self.Val('AFYt')=='1')
+      self.FRM_ViewModel['ShowFieldset'](true);
+  }
+  if (self.ActNo=='08'){
+    var SortStruc=self.Val('Ra5');
+    self.Val('Ra5','');
+    self.V_.SortStruc=JSON.parse(SortStruc||'[]');	
+	self.V_.SortStruc2={}
+	var Items=[];
+	self.IsEmptyFilter=true;
+	$.each(self.V_.SortStruc,function(i,v){
+      Items.push({val:v.id,dsc:v.c,bl:v.bl,bd:v.bd});
+	  if(v.bd=='1'&&v.fq)
+		self.FRM_ViewModel.vm_AllowAddDrop(false);
+	  if(v.bd!='1')
+		self.IsEmptyFilter=false;
+    });
+	self.FRM_ViewModel['_Items'+np.OPTOPT](Items);
+    var MaxCnt=ko.utils.arrayFilter(self.FRM_ViewModel['_Items'+np.OPTOPT](),function(c){return (c.bd!=1);}).length;
+	self.V_.MaxCnt=MaxCnt;
+	if(MaxCnt==1&&self.FRM_ViewModel.vm_AllowAddDrop()){
+	  self.V_.ForceStopAllowAddDrop=true;
+	  self.FRM_ViewModel.vm_AllowAddDrop(false);
+	}
+	if(self.IsEmptyFilter){
+	  self.$np('#AH78').hide();
+	  self.$np('#AH77').hide();
+	}
+	var ShowcolStruc=self.Val('AH75');
+	self.Val('AH75','');
+	self.V_.ShowcolStruc=JSON.parse(ShowcolStruc||'[]');
+	Items=[];
+	var seq=0;
+	$.each(self.V_.ShowcolStruc,function(i,v){
+      Items.push({id:ko.observable(v.id),caption:ko.observable(v.c),seq:ko.observable(++seq),chk:ko.observable(false)});
+	  self.IsEmptyFilter=false;
+    });
+	self.FRM_ViewModel.ShowcolMaxSeq(seq);
+	self.FRM_ViewModel['_Showcol'+np.OPTOPT](Items);
+	
+	var SortList=self.FRM_ViewModel['_Sort'+np.OPTOPT]();
+	$.each(self.V_.SortStruc,function(i,v){
+	  self.V_.SortStruc2[v.id]=v;
+	  if(v.fq){
+		self.IsEmptyFilter=false;
+		SortList[v.fq-1].bd(v.bd);
+		SortList[v.fq-1].id(v.id);
+		SortList[v.fq-1].fk(v.fk);
+		SortList[v.fq-1].ft(v.ft);
+		SortList[v.fq-1].fd(v.fd);
+		SortList[v.fq-1].bl(v.bl);
+		SortList[v.fq-1].bw(v.bw);
+		SortList[v.fq-1].bt(v.bt);
+	  }
+    });
+    self._trigger('AfterReady');
+  }
+},
+BeforeBinding:function(){
+  var self = this, e = self.element, op = self.options;
+  self.V_.MaxSortSeq=20;
+  self.FRM_ViewModel = self.ViewModel;
+  self.FRM_ViewModel.vm_AllowAddDrop=ko.observable(true);
+
+  var SortList=[];
+  for(var i=0;i<self.V_.MaxSortSeq;i++){
+	var SortAttr={
+      fk:ko.observable(0),
+      ft:ko.observable(0),
+      fd:ko.observable(0),
+      bl:ko.observable(0),
+      bw:ko.observable(0),
+      bt:ko.observable(''),
+      bd:ko.observable(0),
+      id:ko.observable(null),
+      c:ko.observable(null),
+	  i:i
+    };
+	SortAttr.id.subscribe(function(NewValue){
+	  var that=this;
+	  if(NewValue){
+		var Loc=-1, LastB=-1, LastS=-1, FirstS=self.V_.MaxSortSeq;
+		Loc=this.i;
+		$.each(SortList,function(i,v){
+		  if(i!=Loc&&SortList[i].id()&&SortList[i].fk()==1)
+			LastB=i;
+		  if(i!=Loc&&SortList[i].id()&&(SortList[i].fk()==1||SortList[i].ft()==1))
+			LastS=i;
+		  if(i!=Loc&&FirstS==self.V_.MaxSortSeq&&SortList[i].id()&&(SortList[i].fk()!=1&&SortList[i].ft()==1))
+			FirstS=i;
+		})
+		if(Loc<LastB){
+		  if(self.V_.SortStruc2[NewValue].bl!=1){
+			SortList[Loc].id(null);
+			return;
+		  }
+		  SortList[Loc].fk(1);
+		  SortList[Loc].ft(1);
+		  SortList[Loc].bw(1);
+		  SortList[Loc].fd(0);
+		}else if(Loc<FirstS&&self.V_.SortStruc2[NewValue].bl==1){
+		  SortList[Loc].fk(1);
+		  SortList[Loc].ft(1);
+		  SortList[Loc].bw(1);
+		  SortList[Loc].fd(0);
+		}else{
+		  SortList[Loc].fk(0);
+		  SortList[Loc].ft(1);
+		  SortList[Loc].bw(1);
+		  SortList[Loc].fd(0);
+		}
+		SortList[Loc].bl(self.V_.SortStruc2[NewValue].bl);
+		for(var i=0;(i<self.V_.MaxSortSeq);i++){
+		  if((Loc!==i)&&SortList[i].id()==NewValue)
+			SortList[i].id(null);
+		}
+	  }
+	},SortAttr);
+    SortList.push(SortAttr);
+  }
+  self.FRM_ViewModel['_Sort'+np.OPTOPT]=ko.observableArray(SortList);
+  self.FRM_ViewModel['_Items'+np.OPTOPT]=ko.observableArray([]);
+  self.FRM_ViewModel['_Showcol'+np.OPTOPT]=ko.observableArray([]);
+  self.FRM_ViewModel.ShowcolMaxSeq=ko.observable(0);
+	
+  self.FRM_ViewModel['vm_TmplName'] =
+  function ($data, bindingContext) {
+    var MyRoot = bindingContext.$root;
+    return MyRoot.vm_FullId('Ra7');
+  }
+  self.FRM_ViewModel['vm_TmplShowcol'] =
+  function ($data, bindingContext) {
+    var MyRoot = bindingContext.$root;
+    return MyRoot.vm_FullId('AH76');
+  }
+  
+  self.FRM_ViewModel['vm_TmplShowcol_OPT'] =
+  function ($data, bindingContext) {
+    var MyRoot = bindingContext.$root;
+    return MyRoot['_Showcol'+np.OPTOPT]();
+  }
+  
+  self.FRM_ViewModel['vm_Tmpl_OPT'] =
+  function ($data, bindingContext) {
+    var MyRoot = bindingContext.$root;
+    return MyRoot['_Sort'+np.OPTOPT]();
+  }
+  self.FRM_ViewModel['fdClick']=
+  function ($data, bindingContext) {
+	if($data.bd()==1) return;
+    (($data.fd()!=1)?$data.fd(1):$data.fd(0));
+  }
+  self.FRM_ViewModel['bwClick']=
+  function ($data, bindingContext) {
+	if($data.bd()==1) return;
+    (($data.bw()!=1)?$data.bw(1):$data.bw(0));
+  }
+  self.FRM_ViewModel['ItemsAfterRender']=
+  function(option, item) {
+    ko.applyBindingsToNode(option, {style: {fontWeight: item&&(item.bl=='1')&&'bolder'||null,
+										         color: item&&(item.bl=='1')&&'red'||null
+										   } }, item);
+    ko.applyBindingsToNode(option, {disable: item&&(item.bd=='1')}, item);
+	
+    
+  }  
+  self.FRM_ViewModel['BSClick']=
+  function ($data, bindingContext) {
+	if($data.bd()==1) return;
+    if($data.fk()!=1){
+	  if($data.bl()!=1) return;
+	  for(var i=0;i<this.i;i++)
+		if(SortList[i].id()&&SortList[i].fk()!=1)
+		  return;
+	  $data.fk(1);
+	}
+	else{
+	  for(var i=this.i+1;i<self.V_.MaxSortSeq;i++)
+		if(SortList[i].id()&&SortList[i].fk()==1)
+		  return;
+	  $data.fk(0);
+	}
+  }
+  self.FRM_ViewModel['_Items_Option']=  
+  function ($data, bindingContext) {
+	
+    return ko.utils.arrayFilter(self.FRM_ViewModel['_Items'+np.OPTOPT](),function(c){
+	  return (c.bd!=1||$data.bd()=='1');
+	});
+  }
+  self.FRM_ViewModel['visible']=  
+  function ($data, bindingContext) {
+    if($data.i==0) return true;
+	if(self.FRM_ViewModel.vm_AllowAddDrop()||self.V_.ForceStopAllowAddDrop){
+      
+	  
+	  var MaxCnt=self.V_.MaxCnt;
+      var cnt=0;
+	  for(var i=0;i<self.V_.MaxSortSeq;i++){
+	    if(SortList[i].id())
+	      cnt++;
+	    if((cnt-1)==i&&(cnt==MaxCnt)&&(cnt<=$data.i))
+	      return false;
+	  }
+	}
+	var Ret=false;
+	for(var i=$data.i-1;i<self.V_.MaxSortSeq;i++)
+	  if(SortList[i].id())
+		Ret=true;
+   return Ret;
+  }
+  self.FRM_ViewModel['ShowFieldset']=ko.observable(false);
+  self.FRM_ViewModel['grouping']=ko.observableArray([{val:0,dsc:'مرتب‌سازي'},{val:1,dsc:'گروه‌بندي'}]);
+  self.FRM_ViewModel['groupingEnable']=
+  function ($data, bindingContext) {
+	if($data.bd()==1) return false;
+    if($data.bl()!=1) return false;
+    for(var i=0;i<$data.i;i++)
+      if(SortList[i].id()&&SortList[i].fk()==0)
+	    return false;
+    for(var i=$data.i+1;i<self.V_.MaxSortSeq;i++)
+      if(SortList[i].id()&&SortList[i].fk()==1)
+	    return false;
+	return true;
+  }
+
+  self.FRM_ViewModel['vm_CloseTmpl'] = ko.observable(self.MakeFullId('AH6r'));
+  self.FRM_ViewModel['vm_ClickClose'] =
+  function ($data,ev,$index) {
+  	var SortList=self.FRM_ViewModel['_Sort'+np.OPTOPT]();
+	for(var i=$index;i<self.V_.MaxSortSeq-1;i++){
+		SortList[i].id(SortList[i+1].id());
+		SortList[i].bd(SortList[i+1].bd());
+		SortList[i].fk(SortList[i+1].fk());
+		SortList[i].ft(SortList[i+1].ft());
+		SortList[i].fd(SortList[i+1].fd());
+		SortList[i].bl(SortList[i+1].bl());
+		SortList[i].bw(SortList[i+1].bw());
+		SortList[i].bt(SortList[i+1].bt());
+	}
+    return true;
+  }  
+
+  self.FRM_ViewModel['vm_AddTmpl'] = ko.observable(self.MakeFullId('AH6s'));
+  self.FRM_ViewModel['vm_ClickAdd'] =
+  function ($data,ev,$index) {
+  	var SortList=self.FRM_ViewModel['_Sort'+np.OPTOPT]();
+	for(var i=self.V_.MaxSortSeq-1;i>$index;i--){
+		SortList[i].id(SortList[i-1].id());
+		SortList[i].bd(SortList[i-1].bd());
+		SortList[i].fk(SortList[i-1].fk());
+		SortList[i].ft(SortList[i-1].ft());
+		SortList[i].fd(SortList[i-1].fd());
+		SortList[i].bl(SortList[i-1].bl());
+		SortList[i].bw(SortList[i-1].bw());
+		SortList[i].bt(SortList[i-1].bt());
+	}
+    return true;
+  }  
+ 
+  self.FRM_ViewModel['vm_PBreakOnTmp'] = ko.observable(self.MakeFullId('B2Ce'));
+  self.FRM_ViewModel['vm_ClickPBreakOn'] =
+  function ($data,ev,$index) {
+    return true;
+  }
+  self.FRM_ViewModel['vm_PBreakOffTmp'] = ko.observable(self.MakeFullId('B2Cf'));
+  self.FRM_ViewModel['vm_ClickPBreakOff'] =
+  function ($data,ev,$index) {
+    return true;
+  }
+
+  
+  self.FRM_ViewModel['vm_UpTmpl'] = ko.observable(self.MakeFullId('AH7N'));
+  self.FRM_ViewModel['vm_ClickUp'] =
+  function ($data,ev,$index) {
+  	var Showcol=self.FRM_ViewModel['_Showcol'+np.OPTOPT]();
+    var id=Showcol[$index].id(),
+		caption=Showcol[$index].caption(),
+		chk=Showcol[$index].chk(); 
+    var id2=Showcol[$index-1].id(),
+		caption2=Showcol[$index-1].caption(),
+		chk2=Showcol[$index-1].chk(); 
+	
+	Showcol[$index-1].id(id);
+	Showcol[$index-1].caption(caption);
+	Showcol[$index-1].chk(chk);
+
+	Showcol[$index].id(id2);
+	Showcol[$index].caption(caption2);
+	Showcol[$index].chk(chk2);
+    return true;
+  }   
+  self.FRM_ViewModel['vm_DwTmpl'] = ko.observable(self.MakeFullId('AH7M'));
+  self.FRM_ViewModel['vm_ClickDw'] =
+  function ($data,ev,$index) {
+  	var Showcol=self.FRM_ViewModel['_Showcol'+np.OPTOPT]();
+    var id=Showcol[$index].id(),
+		caption=Showcol[$index].caption(),
+		chk=Showcol[$index].chk(); 
+    var id2=Showcol[$index+1].id(),
+		caption2=Showcol[$index+1].caption(),
+		chk2=Showcol[$index+1].chk(); 
+	
+	Showcol[$index+1].id(id);
+	Showcol[$index+1].caption(caption);
+	Showcol[$index+1].chk(chk);
+
+	Showcol[$index].id(id2);
+	Showcol[$index].caption(caption2);
+	Showcol[$index].chk(chk2);
+	return true;
+  }   
+},DoActClient:function(act,Params){
+   var self = this, e = self.element, op = self.options;
+   var p=Params;
+   var myEvent=Params.myEvent;
+   if(!self._super(act,Params)) return 0;var inxml,
+    outpar,
+    //Params,
+    FTYPE, FID, SUBFID, ACT, ACT00;
+
+},
+	
+});
+
+})(jQuery,NowPardaz)
+//# sourceURL=BAS0203_CMP_Sort_REP_FILTER
