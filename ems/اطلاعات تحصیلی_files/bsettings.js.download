@@ -1,0 +1,7 @@
+LengthOfStudentNo = 10;
+LengthOfLesNo = 8;
+Login_header_logo = '../../univ/img/login_header_logo.png';
+Use_NPDownload='1';
+
+behestanCN = 'دانشگاه تهران';
+behestanPN = 'سامانه جامع آموزش';

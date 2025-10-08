@@ -1,0 +1,171 @@
+@font-face {
+  font-family: "Golestan System";
+  src: url("/_fonts/Golestan System.ttf") format("truetype");
+}
+
+@page {
+  size: auto;
+  margin: 3mm;
+}
+.CTable2 {
+  display: flex;
+}
+td {
+  box-sizing: border-box;
+  line-height: normal;
+}
+div[id*="RepDataParent"] td {
+  padding-right: 1px;
+} /*
+div[id*='RepDataParent'] .CTable3{
+   background-color:unset !important;
+}*/
+/*.CTable3 td{
+   padding-right:2px !important;
+}*/
+div[id*="RepDataParent"] p {
+  margin-bottom: 0px;
+}
+.CFixComment {
+  text-align: center;
+}
+.CTable3 {
+  font-size: 8pt !important;
+  /*background-color:#F8F8FF !important;*/
+  /*MB start*/
+  /*width:inherit;  اگر این خط باشد گزارش 100 خراب می شود
+   */
+  /*MB end*/
+}
+td.CTDData:not(:empty) {
+  background-color: #f8f8ff !important;
+}
+.CHeaderT3 {
+  font-size: 0.8rem !important;
+  color: #274368 !important;
+  font-family: BTahoma, Tahoma, iransans !important;
+  background-color: #d5dee7 !important;
+  font-weight: bold !important;
+  /*MB start*/
+  /* width:inherit; اگر این خط باشد گزارش 216 خراب می شود
+  */
+  /*MB end*/
+}
+
+td {
+  box-sizing: border-box;
+}
+Pre {
+  font-size: 8pt;
+}
+.CCheckBox {
+  border-right: blue 1px solid;
+  border-top: blue 1px solid;
+  border-left: blue 1px solid;
+  width: 30px;
+  color: blue;
+  border-bottom: blue 1px solid;
+  height: 18px;
+  background-color: #ffffcc;
+}
+.CTextBox {
+  border-right: blue 1px solid;
+  padding-right: 2px;
+  border-top: blue 1px solid;
+  font-size: 8pt;
+  behavior: url(/_styles/TextBox.htc);
+  border-left: blue 1px solid;
+  width: 50px;
+  color: blue;
+  border-bottom: blue 1px solid;
+  font-family: Golestan System;
+  height: 18px;
+  background-color: #ffffcc;
+}
+.CComboBox {
+  padding-right: 2px;
+  font-size: 8pt;
+  color: blue;
+  font-family: Golestan System;
+  height: 25px;
+  background-color: #ffffcc;
+}
+.CHeaderSetting {
+  table-layout: fixed;
+  font-weight: bold;
+  font-size: 10pt;
+  color: maroon;
+  font-family: "Golestan System";
+  width: 325px;
+}
+.CBodySetting {
+  table-layout: fixed;
+  font-size: 8pt;
+  font-family: "Golestan System";
+  width: 325px;
+  padding-right: 2px;
+}
+.CDIVSetting {
+  border-right: 1px solid;
+  border-top: 1px solid;
+  left: 150px;
+  border-left: 1px solid;
+  width: 250px;
+  border-bottom: 1px solid;
+  position: absolute;
+  top: 110px;
+  background-color: #99ccff;
+  filter: progid:DXImageTransform.Microsoft.fade( motion=out,orientation=vertical);
+}
+.CTDSelect {
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#99ccff, EndColorStr=violet);
+  background: -moz-linear-gradient(center top, #99ccff, violet) repeat scroll 0 0 transparent;
+  background: -webkit-gradient(linear, left top, left bottom, from(#99ccff), to(violet));
+}
+.Comm {
+  behavior: url(/_styles/Comm_Butt.HTC);
+}
+
+.Grid {
+  font-size: 8pt;
+  font-family: "Golestan System";
+  text-align: right;
+  border: 1;
+}
+table {
+  border-collapse: inherit;
+}
+div[id*="RepDataParent"] tr.TR-NPGrid {
+  /*height: 17px !important;*/
+  background-color: inherit;
+}
+div[id*="RepDataParent"] pre {
+  margin: 0px;
+}
+div[id*="RepDataParent"] td.npgrid-body-cell {
+  line-height: 1.05;
+  line-height: 1.2;
+  padding-bottom: 0px !important;
+  border: 0px;
+}
+div[id*="RepDataParent"] th.npgrid-header {
+  border-top: 0px;
+}
+.ui-npgrid TR TD {
+  font-family: inherit;
+}
+
+element.style {
+  vertical-align: top !important;
+}
+
+div[id*="RepDataParent"] td.npgrid-body-cell:last-child {
+  padding-left: 0px !important;
+}
+tr.CTRData td.CTDData:empty {
+  padding: 0px;
+}
+/* .CComment_1 td {
+  border-width: 1px;
+  border-style: inherit;
+} */
