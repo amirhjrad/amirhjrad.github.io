@@ -9,14 +9,22 @@ author_profile: true
 
 ## **RESEARCH ASSISTANT EXPERIENCES**
 
+### Clemson University:
+- **AI** (Jul 2025 - Present) | Prof. Fatemeh Afghah
+
+### New York University AD:
+- **FPGA and AI** (Jul 2025 - Present) | Prof. Muhammad Shafique, Dr. Rachmad Putra
+
 ### University of Tehran:
-- **Hardware Design and FPGA** (Jul 2024 - Present) | Dr. Saeed Safari
+- **Hardware Design and FPGA** (Jul 2024 - Sep 2025) | Dr. Saeed Safari
 - **Graph Theory and Entropy** (Jan 2024 - Aug 2024) | Dr. Arezoo N. Ghameshlou
 
 
 ## **TEACHING ASSISTANT EXPERIENCES**
 
 ### University of Tehran:
+- **Logic Circuits** (Sep 2025 - Present) | Prof. Bijan Alizadeh
+- **Computer Vision** (Sep 2025 - Present) | Dr. Mehdi Seyfipoor
 - **Logic Circuits** (Feb 2025 - Aug 2025) | Dr. Saeed Safari
 - **Electronic System Level Design Methodologies (ESL)** (Feb 2025 - Jul 2025) | Dr. Bijan Alizadeh  
 - **Logic Circuits/Digital Systems I** (Sep 2024 - Feb 2025) | Prof. Zain Navabi  
