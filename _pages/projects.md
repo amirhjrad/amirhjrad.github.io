@@ -67,7 +67,7 @@ author_profile: true
     <strong>[SW] Image Inpainting Using AE</strong>
   </summary>
   <p>
-    Designed a Autoencoder for the purpose of reconstruction of damaged images using the CIFAR-10 dataset.
+    Designed an Autoencoder for the purpose of reconstruction of damaged images using the CIFAR-10 dataset.
     <br>
     <!-- 🔗 <a href="https://github.com/amirhjrad/VLSI_layout" target="_blank">View on GitHub</a> -->
   </p>
