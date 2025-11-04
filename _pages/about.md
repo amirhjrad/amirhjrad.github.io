@@ -11,7 +11,7 @@ author_profile: true
 I am Amirhesam Jafari Rad, 22 years old, living in Tehran, Iran. I am currently in my first year of master's degree specializing in Digital IC/Systems at the Univeristy of Tehran.
 
 ## My Research Interests?
-In general, I like hardware design and FPGA implementation along with AI, but I am open to learning new things regardless of whether they are purely hardware. I always enjoy exploring the interdisciplinary fields, contributing to the intersection of hardware and (AI|Mathematics|Biomedical Engineering). Looking for new ideas associated with combination of my field and others is one of my favorite things!
+In general, I like digital IC design and FPGA implementation along with AI, but I am open to learning new things regardless of whether they are purely hardware. I always enjoy exploring the interdisciplinary fields, contributing to the intersection of hardware and (AI|Mathematics|Biomedical Engineering). Looking for new ideas associated with combination of my field and others is one of my favorite things!
 
 
 ## Other Interests and Activities
